@@ -25,6 +25,8 @@ import { CommentRepository, PostStructureType } from '@amityco/ts-sdk';
 import useSDK from '~/v4/core/hooks/useSDK';
 import { useNotifications } from '~/v4/core/providers/NotificationProvider';
 import { EVENT_LISTENER } from '~/v4/social/constants/eventListener';
+import { useSharableLink } from '~/v4/social/hooks/useSharableLink';
+import { SharableModel } from '~/v4/utils/sharableLink';
 
 export interface PostDetailPageProps {
   id: string;
@@ -93,6 +95,10 @@ export function PostDetailPage({
   const notification = useNotifications();
   const { themeStyles } = useAmityPage({ pageId });
   const { post, refresh, isLoading: isPostLoading, error } = usePost(id);
+  const { link: sharableLink } = useSharableLink({
+    model: SharableModel.POST,
+    referenceId: post?.postId,
+  });
   const { setDrawerData, removeDrawerData } = useDrawer();
   const { community } = useCommunity({
     communityId: post?.targetId,
@@ -290,6 +296,7 @@ export function PostDetailPage({
                     post={post}
                     pageId={pageId}
                     onPostDeleted={handlePostDeleted}
+                    sharableLink={sharableLink}
                     onCloseMenu={() => {
                       closePopover();
                       removeDrawerData();
@@ -304,6 +311,7 @@ export function PostDetailPage({
               post={post}
               pageId={pageId}
               onPostDeleted={handlePostDeleted}
+              sharableLink={sharableLink}
               onCloseMenu={() => {
                 closePopover();
                 removeDrawerData();
