@@ -28,6 +28,7 @@ import { EVENT_LISTENER } from '~/v4/social/constants/eventListener';
 
 export interface PostDetailPageProps {
   id: string;
+  showBackButton?: boolean;
   hideTarget?: boolean;
   category?: AmityPostCategory;
   commentId?: string;
@@ -47,6 +48,7 @@ export interface GoToPostDetailPageParams extends Omit<PostDetailPageProps, 'id'
 
 export function PostDetailPage({
   id,
+  showBackButton = true,
   hideTarget,
   category,
   commentId,
@@ -264,11 +266,13 @@ export function PostDetailPage({
   return (
     <div className={styles.postDetailPage} style={themeStyles}>
       <div className={styles.postDetailPage__topBar}>
-        <BackButton
-          pageId={pageId}
-          defaultClassName={styles.postDetailPage__backIcon}
-          onPress={handleBack}
-        />
+        <div style={showBackButton ? undefined : { visibility: 'hidden', pointerEvents: 'none' }}>
+          <BackButton
+            pageId={pageId}
+            defaultClassName={styles.postDetailPage__backIcon}
+            onPress={handleBack}
+          />
+        </div>
         <Typography.TitleBold
           data-testid={`${pageId}/page_title`}
           className={styles.postDetailPage__topBar__title}
