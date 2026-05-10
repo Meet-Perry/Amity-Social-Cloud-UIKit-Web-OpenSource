@@ -392,7 +392,7 @@ export const PostMenu = ({
         >
           <Share className={styles.postMenu__repostPost__icon} />
           <Typography.BodyBold className={styles.postMenu__repostPost__text}>
-            {isReposting ? 'Reposting...' : 'Repost'}
+            {isReposting ? 'Sharing...' : 'Share to my wall'}
           </Typography.BodyBold>
         </Button>
       ) : null}
