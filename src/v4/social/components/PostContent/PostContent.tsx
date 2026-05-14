@@ -43,6 +43,9 @@ import { PostTitle } from './PostTitle';
 import { ChildrenPostContent } from './ChildrenPostContent';
 import { SharableModel } from '~/v4/utils/sharableLink';
 import { Comment, CommentSkeleton } from '~/v4/social/components/Comment';
+import { CommentComposer } from '~/v4/social/components/CommentComposer/CommentComposer';
+import useSDK from '~/v4/core/hooks/useSDK';
+import { EVENT_LISTENER } from '~/v4/social/constants/eventListener';
 import { Divider } from '~/v4/social/elements/Divider';
 import { PostDetailPageProps } from '~/v4/social/pages/PostDetailPage/PostDetailPage';
 import { ReactionList } from '~/v4/social/components/ReactionList/ReactionList';
@@ -102,7 +105,7 @@ interface PostContentProps {
 
 const useInlineComment = ({ post, disabled }: { post: Amity.Post; disabled: boolean }) => {
   const inlineCommentRef = useRef<Amity.Comment | null>(null);
-  const [inlineComment, setInlineComment] = useState<Amity.Comment | null>(null); // Add this back!
+  const [inlineComment, setInlineComment] = useState<Amity.Comment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const findLastestComment = useCallback((lastestComments: Amity.Comment[]) => {
@@ -121,20 +124,36 @@ const useInlineComment = ({ post, disabled }: { post: Amity.Post; disabled: bool
 
     if (!latestComments || !newLatestComment) {
       setIsLoading(false);
-      setInlineComment(null); // Clear the state as well
+      setInlineComment(null);
       inlineCommentRef.current = null;
       return;
     }
 
     if (!isEqual(inlineCommentRef.current, newLatestComment)) {
       inlineCommentRef.current = newLatestComment;
-      setInlineComment(newLatestComment); // This triggers re-render!
+      setInlineComment(newLatestComment);
     }
 
     setIsLoading(false);
   }, [post.latestComments, findLastestComment, disabled, post.postId]);
 
-  return { inlineComment, isLoading }; // Return the state, not the ref
+  // Optimistic update: CommentComposer dispatches L0_COMMENT_CREATED after a successful
+  // submit, so we promote the new comment to the inline preview without waiting for the
+  // SDK live collection to tick.
+  useEffect(() => {
+    if (disabled) return;
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ referenceId: string; comment: Amity.Comment }>).detail;
+      if (!detail || detail.referenceId !== post.postId || !detail.comment) return;
+      inlineCommentRef.current = detail.comment;
+      setInlineComment(detail.comment);
+      setIsLoading(false);
+    };
+    document.addEventListener(EVENT_LISTENER.L0_COMMENT_CREATED, handler);
+    return () => document.removeEventListener(EVENT_LISTENER.L0_COMMENT_CREATED, handler);
+  }, [post.postId, disabled]);
+
+  return { inlineComment, isLoading };
 };
 
 const getPostText = (post: Amity.Post): { title: string; text: string } => {
@@ -497,6 +516,10 @@ export const PostContent = ({
   };
 
   const isNotJoinedCommunity = !targetCommunity?.isJoined && post?.targetType === 'community';
+
+  const { isVisitorOrBot } = useSDK();
+  const canShowInlineComposer =
+    !disabledInlineComment && !!post && !isNotJoinedCommunity && !isVisitorOrBot;
 
   const allConfigReactions = useMemo(
     () => socialReactions.map((reactionConfigItem) => reactionConfigItem.name),
@@ -924,47 +947,53 @@ export const PostContent = ({
           {loadingInlineComment ? (
             <CommentSkeleton pageId={pageId} componentId={componentId} />
           ) : (
-            <>
-              {inlineComment && (
-                <>
-                  <Divider className={styles.postContent__inlineComment__divider} />
-                  <div
-                    data-testid="post-inline-comment-button"
-                    role="button"
-                    tabIndex={0}
-                    className={styles.postContent__inlineComment__container}
-                    onClick={(e) => {
-                      onClick?.({ commentId: inlineComment.commentId, isFromCommentClick: true });
+            inlineComment && (
+              <>
+                <Divider className={styles.postContent__inlineComment__divider} />
+                <div
+                  data-testid="post-inline-comment-button"
+                  role="button"
+                  tabIndex={0}
+                  className={styles.postContent__inlineComment__container}
+                  onClick={() => {
+                    onClick?.({ commentId: inlineComment.commentId, isFromCommentClick: true });
+                  }}
+                >
+                  <Comment
+                    isHost={eventCreatorId === inlineComment?.userId}
+                    key={inlineComment?.commentId}
+                    pageId={pageId}
+                    comment={inlineComment}
+                    onClickReply={() => {
+                      onClick?.({
+                        commentId: inlineComment?.commentId,
+                        parentId: inlineComment?.parentId,
+                        selectedReplyComment: inlineComment!,
+                      });
                     }}
-                  >
-                    <Comment
-                      isHost={eventCreatorId === inlineComment?.userId}
-                      key={inlineComment?.commentId} // Add key to force proper re-rendering
-                      pageId={pageId}
-                      comment={inlineComment}
-                      onClickReply={() => {
-                        onClick?.({
-                          commentId: inlineComment?.commentId,
-                          parentId: inlineComment?.parentId,
-                          selectedReplyComment: inlineComment!,
-                        });
-                      }}
-                      onClickShowReply={() => {
-                        onClick?.({
-                          commentId: inlineComment?.commentId,
-                          showReplyCommentAt: inlineComment?.commentId,
-                        });
-                      }}
-                      componentId={componentId}
-                      // hide option buttion for inline comment
-                      hideOptionButton={true}
-                      community={targetCommunity}
-                      maxLines={3}
-                    />
-                  </div>
-                </>
-              )}
-            </>
+                    onClickShowReply={() => {
+                      onClick?.({
+                        commentId: inlineComment?.commentId,
+                        showReplyCommentAt: inlineComment?.commentId,
+                      });
+                    }}
+                    componentId={componentId}
+                    hideOptionButton={true}
+                    community={targetCommunity}
+                    maxLines={3}
+                  />
+                </div>
+              </>
+            )
+          )}
+          {canShowInlineComposer && (
+            <CommentComposer
+              pageId={pageId}
+              referenceId={post.postId}
+              referenceType={'post'}
+              onCancelReply={() => {}}
+              community={targetCommunity}
+            />
           )}
         </>
       )}
