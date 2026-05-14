@@ -23,7 +23,7 @@ import styles from './TextWithMention.module.css';
 import { useResponsive } from '~/v4/core/hooks/useResponsive';
 import { useSearchResultContext } from '~/v4/social/providers/SearchResultProvider';
 import { hashtagRegex } from '~/v4/social/utils/hashtagRegex';
-import { URL_REGEX } from '~/v4/social/constants/post';
+import { extractLinks } from '~/v4/social/utils/extractLinks';
 
 interface TextWithMentionProps {
   pageId?: string;
@@ -84,30 +84,8 @@ export const TextWithMention = ({
 
   const Component = isBold ? Typography.BodyBold : Typography.Body;
 
-  const extractLinks = useCallback((text: string): Amity.Link[] => {
-    const links: Amity.Link[] = [];
-    const matches = text.matchAll(URL_REGEX);
-
-    for (const match of matches) {
-      if (match.index !== undefined && match[0]) {
-        // Only add valid URLs with actual content
-        const url = match[0].trim();
-        if (url.length > 0) {
-          links.push({
-            index: match.index,
-            length: url.length,
-            url,
-            renderPreview: true,
-          });
-        }
-      }
-    }
-
-    return links;
-  }, []);
-
   const editorState = useMemo(() => {
-    const extractedLinks = links ?? extractLinks(data.text);
+    const extractedLinks = links && links.length > 0 ? links : extractLinks(data.text);
     return textToEditorState({
       data,
       mentionees,
@@ -116,7 +94,7 @@ export const TextWithMention = ({
       links: extractedLinks,
       productTags,
     });
-  }, [data, mentionees, hashtags, metadata, links, extractLinks, productTags]);
+  }, [data, mentionees, hashtags, metadata, links, productTags]);
 
   const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 

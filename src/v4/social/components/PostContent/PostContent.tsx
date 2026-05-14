@@ -416,6 +416,22 @@ export const PostContent = ({
     });
   };
 
+  // Card-wide click navigates to post detail, but must yield to inner links/buttons
+  // and to active text selection so URLs stay tappable and body text stays selectable.
+  const handlePostBodyClick = (e: MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.closest('a, button, input, textarea, [data-no-card-click]')) return;
+    if (window.getSelection()?.toString()) return;
+    onClick?.();
+  };
+
+  const handlePostBodyKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
+
   const handleCommentClick = (
     context: Pick<
       PostDetailPageProps,
@@ -694,10 +710,12 @@ export const PostContent = ({
         </div>
 
         <div className={styles.postContent__content_and_reactions}>
-          <Button
-            variant="default"
+          <div
+            role="button"
+            tabIndex={0}
             className={styles.postContent__content}
-            onPress={() => onClick?.()}
+            onClick={handlePostBodyClick}
+            onKeyDown={handlePostBodyKeyDown}
             data-testid={`${pageId}/${componentId}/post-content-text-button`}
           >
             <TextContent
@@ -746,7 +764,7 @@ export const PostContent = ({
                 onClick={() => goToPostDetailPage({ postId: repostedPostId })}
               />
             )}
-          </Button>
+          </div>
           {canShowProductTags && (
             <ProductCarousel pageId={pageId} componentId={componentId} post={post} />
           )}
