@@ -24,6 +24,7 @@ import { useResponsive } from '~/v4/core/hooks/useResponsive';
 import { useSearchResultContext } from '~/v4/social/providers/SearchResultProvider';
 import { hashtagRegex } from '~/v4/social/utils/hashtagRegex';
 import { extractLinks } from '~/v4/social/utils/extractLinks';
+import { parseInlineMarkdown } from '~/v4/social/utils/parseInlineMarkdown';
 
 interface TextWithMentionProps {
   pageId?: string;
@@ -449,7 +450,47 @@ export const TextWithMention = ({
       if (!child.text) {
         return null;
       }
-      return <React.Fragment key={childIndex}>{parseTextWithHashtags(child.text)}</React.Fragment>;
+      const segments = parseInlineMarkdown(child.text);
+      return (
+        <React.Fragment key={childIndex}>
+          {segments.map((segment, segmentIndex) => {
+            if (segment.type === 'bold') {
+              return <strong key={segmentIndex}>{parseTextWithHashtags(segment.text)}</strong>;
+            }
+            if (segment.type === 'italic') {
+              return <em key={segmentIndex}>{parseTextWithHashtags(segment.text)}</em>;
+            }
+            if (segment.type === 'link') {
+              const href = /^(https?|ftp|mailto):/.test(segment.url)
+                ? segment.url
+                : `https://${segment.url}`;
+              return (
+                <a
+                  target="_blank"
+                  key={segmentIndex}
+                  href={href}
+                  rel="noopener noreferrer"
+                  onMouseUp={(e) => e.stopPropagation()}
+                  onTouchEnd={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onPointerUp={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  className={clsx(styles.textWithMention__link, linkClassName)}
+                  data-testid={`${pageId}/${componentId}/post_link`}
+                >
+                  {segment.label}
+                </a>
+              );
+            }
+            return (
+              <React.Fragment key={segmentIndex}>
+                {parseTextWithHashtags(segment.text)}
+              </React.Fragment>
+            );
+          })}
+        </React.Fragment>
+      );
     }
 
     return null;
