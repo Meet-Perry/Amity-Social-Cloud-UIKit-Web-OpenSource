@@ -42,17 +42,15 @@ import { CopyLinkButton } from '~/v4/social/elements/CopyLinkButton';
 import { PostTitle } from './PostTitle';
 import { ChildrenPostContent } from './ChildrenPostContent';
 import { SharableModel } from '~/v4/utils/sharableLink';
-import { Comment, CommentSkeleton } from '~/v4/social/components/Comment';
+import { CommentList } from '~/v4/social/components/CommentList/CommentList';
 import { CommentComposer } from '~/v4/social/components/CommentComposer/CommentComposer';
 import useSDK from '~/v4/core/hooks/useSDK';
-import { EVENT_LISTENER } from '~/v4/social/constants/eventListener';
 import { Divider } from '~/v4/social/elements/Divider';
 import { PostDetailPageProps } from '~/v4/social/pages/PostDetailPage/PostDetailPage';
 import { ReactionList } from '~/v4/social/components/ReactionList/ReactionList';
 import { useSharableLink } from '~/v4/social/hooks/useSharableLink';
 import { Button } from '~/v4/core/components/AriaButton';
 import { useCustomReaction } from '~/v4/core/providers/CustomReactionProvider';
-import { isEqual } from 'lodash';
 import useCommunityProfileGlobalBehavior from '~/v4/core/hooks/useCommunityProfileGlobalBehavior';
 import useUserProfileGlobalBehavior from '~/v4/core/hooks/useUserProfileGlobalBehavior';
 import { EventHostBadge } from '~/v4/social/elements';
@@ -102,59 +100,6 @@ interface PostContentProps {
   expandAllContent?: boolean;
   eventCreatorId?: Amity.Event['userId'];
 }
-
-const useInlineComment = ({ post, disabled }: { post: Amity.Post; disabled: boolean }) => {
-  const inlineCommentRef = useRef<Amity.Comment | null>(null);
-  const [inlineComment, setInlineComment] = useState<Amity.Comment | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const findLastestComment = useCallback((lastestComments: Amity.Comment[]) => {
-    const sortedComments = [...(lastestComments || [])]
-      .sort((a, b) => Date.parse(b?.createdAt || '') - Date.parse(a?.createdAt || ''))
-      .filter((comment) => !comment?.flagCount && !comment?.isDeleted);
-
-    return sortedComments?.[0] || null;
-  }, []);
-
-  useEffect(() => {
-    if (disabled) return;
-
-    const latestComments = post.latestComments;
-    const newLatestComment = findLastestComment(latestComments as Amity.Comment[]);
-
-    if (!latestComments || !newLatestComment) {
-      setIsLoading(false);
-      setInlineComment(null);
-      inlineCommentRef.current = null;
-      return;
-    }
-
-    if (!isEqual(inlineCommentRef.current, newLatestComment)) {
-      inlineCommentRef.current = newLatestComment;
-      setInlineComment(newLatestComment);
-    }
-
-    setIsLoading(false);
-  }, [post.latestComments, findLastestComment, disabled, post.postId]);
-
-  // Optimistic update: CommentComposer dispatches L0_COMMENT_CREATED after a successful
-  // submit, so we promote the new comment to the inline preview without waiting for the
-  // SDK live collection to tick.
-  useEffect(() => {
-    if (disabled) return;
-    const handler = (event: Event) => {
-      const detail = (event as CustomEvent<{ referenceId: string; comment: Amity.Comment }>).detail;
-      if (!detail || detail.referenceId !== post.postId || !detail.comment) return;
-      inlineCommentRef.current = detail.comment;
-      setInlineComment(detail.comment);
-      setIsLoading(false);
-    };
-    document.addEventListener(EVENT_LISTENER.L0_COMMENT_CREATED, handler);
-    return () => document.removeEventListener(EVENT_LISTENER.L0_COMMENT_CREATED, handler);
-  }, [post.postId, disabled]);
-
-  return { inlineComment, isLoading };
-};
 
 const getPostText = (post: Amity.Post): { title: string; text: string } => {
   if (!isTextPost(post)) return { title: '', text: '' };
@@ -343,16 +288,45 @@ export const PostContent = ({
   // State to force poll results view when poll is closed from menu
   const [forceShowPollResults, setForceShowPollResults] = useState(false);
 
+  // Inline reply state for the feed card. Mirrors PostDetailPage: top composer always shows
+  // for new top-level comments; a separate reply composer renders right under the L0 ancestor
+  // of whatever comment is being replied to (desktop). Mobile reuses the top composer in
+  // reply mode (no second composer floating mid-list).
+  const [replyTo, setReplyTo] = useState<Amity.Comment | undefined>(undefined);
+  const [replyParentIdOverride, setReplyParentIdOverride] = useState<string | undefined>(undefined);
+  const [replyL0AncestorId, setReplyL0AncestorId] = useState<string | undefined>(undefined);
+
+  const handleInlineReplyClick = useCallback(
+    ({
+      comment,
+      parentIdOverride,
+      l0AncestorId,
+    }: {
+      comment: Amity.Comment;
+      parentIdOverride?: string;
+      l0AncestorId?: string;
+    }) => {
+      setReplyTo((prev) => {
+        const isToggleOff = prev?.commentId === comment.commentId;
+        setReplyParentIdOverride(isToggleOff ? undefined : parentIdOverride);
+        setReplyL0AncestorId(isToggleOff ? undefined : l0AncestorId);
+        return isToggleOff ? undefined : comment;
+      });
+    },
+    [],
+  );
+
+  const handleCancelInlineReply = useCallback(() => {
+    setReplyTo(undefined);
+    setReplyParentIdOverride(undefined);
+    setReplyL0AncestorId(undefined);
+  }, []);
+
   const handlePollClosed = useCallback(() => {
     setForceShowPollResults(true);
   }, []);
 
   const disabledInlineComment = pageId === 'post_detail_page' || pageId === 'pending_posts_page';
-
-  const { inlineComment, isLoading: loadingInlineComment } = useInlineComment({
-    post,
-    disabled: disabledInlineComment,
-  });
 
   const isModerator =
     (moderators || []).find((moderator) => moderator.userId === post.postedUserId) != null;
@@ -944,57 +918,60 @@ export const PostContent = ({
        */}
       {!disabledInlineComment && (
         <>
-          {loadingInlineComment ? (
-            <CommentSkeleton pageId={pageId} componentId={componentId} />
-          ) : (
-            inlineComment && (
-              <>
-                <Divider className={styles.postContent__inlineComment__divider} />
-                <div
-                  data-testid="post-inline-comment-button"
-                  role="button"
-                  tabIndex={0}
-                  className={styles.postContent__inlineComment__container}
-                  onClick={() => {
-                    onClick?.({ commentId: inlineComment.commentId, isFromCommentClick: true });
-                  }}
-                >
-                  <Comment
-                    isHost={eventCreatorId === inlineComment?.userId}
-                    key={inlineComment?.commentId}
-                    pageId={pageId}
-                    comment={inlineComment}
-                    onClickReply={() => {
-                      onClick?.({
-                        commentId: inlineComment?.commentId,
-                        parentId: inlineComment?.parentId,
-                        selectedReplyComment: inlineComment!,
-                      });
-                    }}
-                    onClickShowReply={() => {
-                      onClick?.({
-                        commentId: inlineComment?.commentId,
-                        showReplyCommentAt: inlineComment?.commentId,
-                      });
-                    }}
-                    componentId={componentId}
-                    hideOptionButton={true}
-                    community={targetCommunity}
-                    maxLines={3}
-                  />
-                </div>
-              </>
-            )
-          )}
+          <Divider className={styles.postContent__inlineComment__divider} />
           {canShowInlineComposer && (
             <CommentComposer
               pageId={pageId}
               referenceId={post.postId}
               referenceType={'post'}
-              onCancelReply={() => {}}
+              // Desktop keeps the top composer for new top-level comments only; replies render
+              // inline below the L0 (see renderReplyComment). Mobile shares this composer for
+              // both new comments and replies (matches PostDetailPage's mobile UX).
+              replyTo={isDesktop ? undefined : replyTo}
+              parentIdOverride={isDesktop ? undefined : replyParentIdOverride}
+              onCancelReply={handleCancelInlineReply}
               community={targetCommunity}
             />
           )}
+          <div className={styles.postContent__inlineComment__container}>
+            <CommentList
+              pageId={pageId}
+              referenceId={post.postId}
+              referenceType="post"
+              limit={3}
+              community={targetCommunity}
+              commentCount={post.commentsCount}
+              eventCreatorId={eventCreatorId}
+              hideEmptyState
+              onClickReply={handleInlineReplyClick}
+              replyTargetCommentId={
+                isDesktop && replyL0AncestorId
+                  ? replyParentIdOverride ?? replyTo?.commentId
+                  : undefined
+              }
+              renderReplyComment={(comment) => {
+                if (!isDesktop || !canShowInlineComposer) return undefined;
+                const effectiveL0Id = replyL0AncestorId ?? replyTo?.commentId;
+                if (replyTo && comment.commentId === effectiveL0Id) {
+                  const composerMarginLeft = replyTo.parentId ? '2.5rem' : '0';
+                  return (
+                    <div style={{ marginLeft: composerMarginLeft }}>
+                      <CommentComposer
+                        pageId={pageId}
+                        referenceId={post.postId}
+                        referenceType={'post'}
+                        replyTo={replyTo}
+                        parentIdOverride={replyParentIdOverride}
+                        onCancelReply={handleCancelInlineReply}
+                        community={targetCommunity}
+                      />
+                    </div>
+                  );
+                }
+                return undefined;
+              }}
+            />
+          </div>
         </>
       )}
     </div>
