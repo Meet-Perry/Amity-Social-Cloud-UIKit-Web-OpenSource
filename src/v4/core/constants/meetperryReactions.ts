@@ -16,3 +16,24 @@ export const MEETPERRY_REACTIONS: AmityReactionType[] = [
 ];
 
 export const MEETPERRY_DEFAULT_REACTION = 'love';
+
+// Display-only fallbacks for reactions stored under the kit's previous names.
+// These are NOT offered in the picker — they only render existing reaction
+// records correctly instead of showing the question-mark FallbackReaction icon.
+export const MEETPERRY_LEGACY_REACTIONS: AmityReactionType[] = [
+  { name: 'like', image: emojiDataUrl('👍') },
+  { name: 'fire', image: emojiDataUrl('🔥') },
+  { name: 'happy', image: emojiDataUrl('😀') },
+  { name: 'sad', image: emojiDataUrl('😢') },
+  { name: 'heart', image: emojiDataUrl('❤️') },
+  { name: 'grinning', image: emojiDataUrl('😀') },
+  { name: 'crying', image: emojiDataUrl('😢') },
+];
+
+export const withLegacyReactions = (pickerReactions: AmityReactionType[]): AmityReactionType[] => {
+  const pickerNames = new Set(pickerReactions.map((r) => r.name));
+  return [
+    ...pickerReactions,
+    ...MEETPERRY_LEGACY_REACTIONS.filter((r) => !pickerNames.has(r.name)),
+  ];
+};

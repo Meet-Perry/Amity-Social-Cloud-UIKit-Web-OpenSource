@@ -2,12 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import clsx from 'clsx';
 import { Typography } from '~/v4/core/components';
 import { IconComponent } from '~/v4/core/IconComponent';
-import Crying from '~/v4/icons/Crying';
 import FallbackReaction from '~/v4/icons/FallbackReaction';
-import Fire from '~/v4/icons/Fire';
-import Happy from '~/v4/icons/Happy';
-import Like from '~/v4/icons/Like';
-import Love from '~/v4/icons/Love';
 import { useAmityElement } from '~/v4/core/hooks/uikit';
 import { useResponsive } from '~/v4/core/hooks/useResponsive';
 import { useReactionHandler } from '~/v4/core/hooks/useReactionHandler';
@@ -96,7 +91,7 @@ export function ReactionButton({
       elementId,
     });
 
-  const { socialReactions } = useCustomReaction();
+  const { displaySocialReactions } = useCustomReaction();
 
   const reactionButtonRef = useRef<HTMLButtonElement>(null);
   const desktopButtonRef = useRef<HTMLDivElement>(null);
@@ -180,7 +175,9 @@ export function ReactionButton({
   const renderMyReaction = () => {
     if (!displayReaction) return null;
 
-    const customReaction = socialReactions?.find((reaction) => reaction.name === displayReaction);
+    const customReaction = displaySocialReactions?.find(
+      (reaction) => reaction.name === displayReaction,
+    );
 
     if (customReaction) {
       return (
@@ -193,24 +190,9 @@ export function ReactionButton({
       );
     }
 
-    switch (displayReaction) {
-      case 'like':
-        return <Like className={clsx(styles.reactButton__icon, reactButtonClassName)} />;
-      case 'love':
-        return <Love className={styles.reactButton__icon} />;
-      case 'fire':
-        return <Fire className={styles.reactButton__icon} />;
-      case 'happy':
-        return <Happy className={styles.reactButton__icon} />;
-      case 'crying':
-        return <Crying className={styles.reactButton__icon} />;
-      default:
-        return (
-          <FallbackReaction
-            className={clsx(styles.reactButton__icon, fallbackReactButtonClassName)}
-          />
-        );
-    }
+    return (
+      <FallbackReaction className={clsx(styles.reactButton__icon, fallbackReactButtonClassName)} />
+    );
   };
 
   const renderDefaultIcon = () => (
