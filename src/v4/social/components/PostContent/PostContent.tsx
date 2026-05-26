@@ -570,6 +570,7 @@ export const PostContent = ({
     threshold: 0.6,
     elementRef,
   });
+  const shouldRenderInlineComments = isVisible || !!replyTo;
 
   useEffect(() => {
     if (page.type === PageTypes.PostDetailPage) return;
@@ -933,45 +934,47 @@ export const PostContent = ({
               community={targetCommunity}
             />
           )}
-          <div className={styles.postContent__inlineComment__container}>
-            <CommentList
-              pageId={pageId}
-              referenceId={post.postId}
-              referenceType="post"
-              limit={3}
-              community={targetCommunity}
-              commentCount={post.commentsCount}
-              eventCreatorId={eventCreatorId}
-              hideEmptyState
-              onClickReply={handleInlineReplyClick}
-              replyTargetCommentId={
-                isDesktop && replyL0AncestorId
-                  ? replyParentIdOverride ?? replyTo?.commentId
-                  : undefined
-              }
-              renderReplyComment={(comment) => {
-                if (!isDesktop || !canShowInlineComposer) return undefined;
-                const effectiveL0Id = replyL0AncestorId ?? replyTo?.commentId;
-                if (replyTo && comment.commentId === effectiveL0Id) {
-                  const composerMarginLeft = replyTo.parentId ? '2.5rem' : '0';
-                  return (
-                    <div style={{ marginLeft: composerMarginLeft }}>
-                      <CommentComposer
-                        pageId={pageId}
-                        referenceId={post.postId}
-                        referenceType={'post'}
-                        replyTo={replyTo}
-                        parentIdOverride={replyParentIdOverride}
-                        onCancelReply={handleCancelInlineReply}
-                        community={targetCommunity}
-                      />
-                    </div>
-                  );
+          {shouldRenderInlineComments && (
+            <div className={styles.postContent__inlineComment__container}>
+              <CommentList
+                pageId={pageId}
+                referenceId={post.postId}
+                referenceType="post"
+                limit={3}
+                community={targetCommunity}
+                commentCount={post.commentsCount}
+                eventCreatorId={eventCreatorId}
+                hideEmptyState
+                onClickReply={handleInlineReplyClick}
+                replyTargetCommentId={
+                  isDesktop && replyL0AncestorId
+                    ? replyParentIdOverride ?? replyTo?.commentId
+                    : undefined
                 }
-                return undefined;
-              }}
-            />
-          </div>
+                renderReplyComment={(comment) => {
+                  if (!isDesktop || !canShowInlineComposer) return undefined;
+                  const effectiveL0Id = replyL0AncestorId ?? replyTo?.commentId;
+                  if (replyTo && comment.commentId === effectiveL0Id) {
+                    const composerMarginLeft = replyTo.parentId ? '2.5rem' : '0';
+                    return (
+                      <div style={{ marginLeft: composerMarginLeft }}>
+                        <CommentComposer
+                          pageId={pageId}
+                          referenceId={post.postId}
+                          referenceType={'post'}
+                          replyTo={replyTo}
+                          parentIdOverride={replyParentIdOverride}
+                          onCancelReply={handleCancelInlineReply}
+                          community={targetCommunity}
+                        />
+                      </div>
+                    );
+                  }
+                  return undefined;
+                }}
+              />
+            </div>
+          )}
         </>
       )}
     </div>

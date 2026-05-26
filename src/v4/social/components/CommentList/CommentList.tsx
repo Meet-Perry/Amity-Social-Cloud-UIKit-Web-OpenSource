@@ -88,7 +88,7 @@ export const CommentList = ({
   const [isHighlighted, setIsHighlighted] = useState(false);
   const [pendingL0Comments, setPendingL0Comments] = useState<Amity.Comment[]>([]);
 
-  const { items, refresh, loadMore, hasMore, isLoading } = usePaginator({
+  const { items, loadMore, hasMore, isLoading } = usePaginator({
     fetcher: CommentRepository.getComments,
     params: {
       referenceId,
@@ -152,10 +152,6 @@ export const CommentList = ({
       }
     },
   });
-
-  useEffect(() => {
-    refresh();
-  }, []);
 
   // Listen for newly created L0 comments and prepend them optimistically.
   useEffect(() => {

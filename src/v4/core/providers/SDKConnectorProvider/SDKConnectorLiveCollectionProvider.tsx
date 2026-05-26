@@ -65,8 +65,10 @@ export default function SDKConnectorLiveCollectionProvider({
     const key = getSubscriberKey(fetcher.name, params);
 
     if (refresh) {
+      unsubscribeFnMap.current[key]?.();
       delete responseMap.current[key];
       delete subscriberMap.current[key];
+      delete unsubscribeFnMap.current[key];
     }
 
     if (subscriberMap.current[key] && responseMap.current[key]) {
@@ -95,6 +97,12 @@ export default function SDKConnectorLiveCollectionProvider({
           subscriberMap.current[key] = subscriberMap.current[key].filter(
             (subscriber) => subscriber !== callbackFn,
           );
+        }
+        if (!subscriberMap.current[key]?.length) {
+          unsubscribeFnMap.current[key]?.();
+          delete responseMap.current[key];
+          delete subscriberMap.current[key];
+          delete unsubscribeFnMap.current[key];
         }
       },
     };
