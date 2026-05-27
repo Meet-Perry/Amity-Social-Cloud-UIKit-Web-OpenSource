@@ -394,8 +394,8 @@ export const defaultConfig: DefaultConfig = {
     },
     '*/post_content/post_content_view_count': {},
     '*/post_content/reaction_button': {
-      icon: 'likeButtonIcon',
-      text: 'Like',
+      icon: 'loveButtonIcon',
+      text: 'Love',
     },
     '*/post_content/comment_button': {
       icon: 'commentButtonIcon',
