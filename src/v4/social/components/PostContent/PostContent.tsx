@@ -570,7 +570,14 @@ export const PostContent = ({
     threshold: 0.6,
     elementRef,
   });
-  const shouldRenderInlineComments = isVisible || !!replyTo;
+  // Mount the inline CommentList once the post has scrolled into view and keep it mounted for the rest of this PostContent's lifetime.
+  // Gating on the live `isVisible` flag caused the list to unmount/remount as the post crossed the viewport, refetching comments and shifting layout on every scroll.
+  // Sticky-once-seen still bounds SDK observers (posts the user never sees never subscribe), which is what the rate-limiter fix needs.
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+  useEffect(() => {
+    if (isVisible) setHasBeenVisible(true);
+  }, [isVisible]);
+  const shouldRenderInlineComments = hasBeenVisible || !!replyTo;
 
   useEffect(() => {
     if (page.type === PageTypes.PostDetailPage) return;

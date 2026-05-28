@@ -88,6 +88,7 @@ export const CommentList = ({
   const [isHighlighted, setIsHighlighted] = useState(false);
   const [pendingL0Comments, setPendingL0Comments] = useState<Amity.Comment[]>([]);
 
+  // Do not call refresh() on mount: usePaginator already fetches, and a manual refresh on every CommentList mount re-opens the SDK live observer (this component renders per feed post, so it trips the rate limiter fast).
   const { items, loadMore, hasMore, isLoading } = usePaginator({
     fetcher: CommentRepository.getComments,
     params: {

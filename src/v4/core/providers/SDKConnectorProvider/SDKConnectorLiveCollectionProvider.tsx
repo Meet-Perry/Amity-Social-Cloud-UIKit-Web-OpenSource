@@ -65,6 +65,7 @@ export default function SDKConnectorLiveCollectionProvider({
     const key = getSubscriberKey(fetcher.name, params);
 
     if (refresh) {
+      // Unsubscribe the prior observer before discarding cache; skipping this leaks SDK live channels and trips the rate limiter.
       unsubscribeFnMap.current[key]?.();
       delete responseMap.current[key];
       delete subscriberMap.current[key];
@@ -99,6 +100,7 @@ export default function SDKConnectorLiveCollectionProvider({
           );
         }
         if (!subscriberMap.current[key]?.length) {
+          // Last subscriber detached — close the SDK live channel; otherwise observers accumulate across the session.
           unsubscribeFnMap.current[key]?.();
           delete responseMap.current[key];
           delete subscriberMap.current[key];
