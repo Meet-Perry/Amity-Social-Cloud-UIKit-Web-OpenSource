@@ -1,5 +1,6 @@
-import { defineConfig } from 'tsup';
 import { replace } from 'esbuild-plugin-replace';
+import { defineConfig } from 'tsup';
+
 import pkg from './package.json';
 
 export default defineConfig((options) => ({
@@ -50,6 +51,7 @@ export default defineConfig((options) => ({
   onSuccess: options.watch
     ? undefined
     : async () => {
+        console.log('active resources at build end:', process.getActiveResourcesInfo());
         process.exit(0);
       },
 }));
