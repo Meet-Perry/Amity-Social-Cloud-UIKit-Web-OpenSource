@@ -8,6 +8,7 @@ const emojiDataUrl = (emoji: string) =>
 export const MEETPERRY_REACTIONS: AmityReactionType[] = [
   { name: 'love', image: emojiDataUrl('❤️') },
   { name: 'haha', image: emojiDataUrl('😂') },
+  { name: 'like', image: emojiDataUrl('👍') },
   { name: 'bullish', image: emojiDataUrl('🚀') },
   { name: 'curious', image: emojiDataUrl('👀') },
   { name: 'support', image: emojiDataUrl('🙏') },
@@ -21,7 +22,6 @@ export const MEETPERRY_DEFAULT_REACTION = 'love';
 // These are NOT offered in the picker — they only render existing reaction
 // records correctly instead of showing the question-mark FallbackReaction icon.
 export const MEETPERRY_LEGACY_REACTIONS: AmityReactionType[] = [
-  { name: 'like', image: emojiDataUrl('👍') },
   { name: 'fire', image: emojiDataUrl('🔥') },
   { name: 'happy', image: emojiDataUrl('😀') },
   { name: 'sad', image: emojiDataUrl('😢') },
