@@ -24,10 +24,12 @@
 }
 
 .fileContent__icon {
+  display: block;
   flex-shrink: 0;
-  width: 1.5rem;
-  height: 1.5rem;
-  color: var(--asc-color-base-shade2);
+  width: 1.75rem;
+
+  /* Preserve the file-type icon's intrinsic 24:28 aspect ratio. */
+  aspect-ratio: 24 / 28;
 }
 
 .fileContent__info {

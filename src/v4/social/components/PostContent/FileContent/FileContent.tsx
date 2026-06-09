@@ -1,7 +1,6 @@
-import type React from 'react';
-
 import filesize from 'filesize';
 
+import FileIcon from '~/icons/files';
 import { Typography } from '~/v4/core/components';
 import { useAmityElement } from '~/v4/core/hooks/uikit';
 import useFile from '~/v4/core/hooks/useFile';
@@ -41,25 +40,6 @@ export const FileContent = ({
   );
 };
 
-const FileIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    width="100%"
-    height="100%"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
-    <path
-      d="M13.5 2.75H6.5C5.80964 2.75 5.25 3.30964 5.25 4V20C5.25 20.6904 5.80964 21.25 6.5 21.25H17.5C18.1904 21.25 18.75 20.6904 18.75 20V8L13.5 2.75Z"
-      stroke="currentColor"
-      strokeWidth="1.3"
-      strokeLinejoin="round"
-    />
-    <path d="M13.25 3V8.25H18.5" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-  </svg>
-);
-
 type FileItemProps = {
   fileId?: string;
   pageId?: string;
@@ -84,7 +64,8 @@ function FileItem({ fileId, pageId = '*', componentId = '*' }: FileItemProps) {
       data-testid={`${pageId}/${componentId}/post_file`}
     >
       <span className={styles.fileContent__icon}>
-        <FileIcon />
+        {/* Reuse the composer's colored file-type icon set (PDF/Doc/Xls/…) */}
+        <FileIcon file={{ name, type: file.attributes?.mimeType ?? '' }} />
       </span>
       <span className={styles.fileContent__info}>
         <Typography.BodyBold as="span" className={styles.fileContent__name}>
