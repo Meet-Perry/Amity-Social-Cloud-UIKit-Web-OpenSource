@@ -77,7 +77,7 @@ export const TextWithMention = ({
   seeLessSupport = false,
   testId,
 }: TextWithMentionProps) => {
-  const { goToUserProfilePage, goToSocialGlobalSearchPage } = useNavigation();
+  const { goToUserProfilePage, goToSocialGlobalSearchPage, onLinkClick } = useNavigation();
   const { AmityGlobalBehavior } = usePageBehavior();
   const [isExpanded, setIsExpanded] = useState(seeMoreIsOpen);
   const { isDesktop } = useResponsive();
@@ -437,6 +437,14 @@ export const TextWithMention = ({
           key={child.url}
           href={href}
           rel="noopener noreferrer"
+          onClick={
+            onLinkClick
+              ? (e) => {
+                  e.preventDefault();
+                  onLinkClick(href);
+                }
+              : undefined
+          }
           onMouseUp={(e) => e.stopPropagation()}
           onTouchEnd={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
@@ -476,6 +484,14 @@ export const TextWithMention = ({
                   key={segmentIndex}
                   href={href}
                   rel="noopener noreferrer"
+                  onClick={
+                    onLinkClick
+                      ? (e) => {
+                          e.preventDefault();
+                          onLinkClick(href);
+                        }
+                      : undefined
+                  }
                   onMouseUp={(e) => e.stopPropagation()}
                   onTouchEnd={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}

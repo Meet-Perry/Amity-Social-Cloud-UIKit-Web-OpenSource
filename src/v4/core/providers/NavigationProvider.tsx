@@ -456,6 +456,7 @@ type ContextValue = {
   goToPastEventsPage: () => void;
   goToEventDetailPage: (context: EventDetailPageProps) => void;
   goToEventAttendeesPage?: (context: EventAttendeesPageProps) => void;
+  onLinkClick?: (href: string) => void;
 };
 
 let defaultValue: ContextValue = {
@@ -723,6 +724,7 @@ interface NavigationProviderProps {
   activeRoute?: AmityRoute;
   onRouteChange?: (route: AmityRoute) => void;
   onEmptyNavigationStack?: () => void;
+  onLinkClick?: (href: string) => void;
 }
 
 const getDefaultRoute = (activeRoute?: AmityRoute): Page => {
@@ -776,6 +778,7 @@ export default function NavigationProvider({
   onMessageUser,
   onBack,
   onEmptyNavigationStack,
+  onLinkClick,
 }: NavigationProviderProps) {
   const [pages, setPages] = useState<Page[]>([getDefaultRoute(activeRoute)]);
   const currentPage = useMemo(() => pages[pages.length - 1], [pages]);
@@ -1671,6 +1674,7 @@ export default function NavigationProvider({
         goToEventDetailPage,
         goToEventAttendeesPage,
         onProductTagClick,
+        onLinkClick,
       }}
     >
       <NavigationContextV3.Provider
