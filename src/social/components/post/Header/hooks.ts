@@ -46,11 +46,8 @@ export const usePostHeaderProps = ({
     postTargetName: postTargetName,
     timeAgo: post?.createdAt ? new Date(post?.createdAt) : undefined,
     isModerator: isCommunityModerator || isModerator(user?.roles) || isAdmin(user?.roles),
-    // `hideEditedLabel` is a generic opt-out set on the post's metadata by the
-    // creator. It lets server-generated posts (which may be updated after
-    // creation) suppress the misleading "(edited)" attribution.
     isEdited:
-      !post?.metadata?.hideEditedLabel && post?.createdAt && post?.editedAt
+      post?.createdAt && post?.editedAt
         ? new Date(post?.createdAt).getTime() < new Date(post?.editedAt).getTime()
         : false,
     isBanned: user?.isGlobalBanned,
