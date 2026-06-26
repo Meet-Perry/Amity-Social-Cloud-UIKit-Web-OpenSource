@@ -38,6 +38,7 @@ export const ImagePollAnswer: FC<ImagePollAnswerProps> = ({
     file &&
       openPopup({
         id: 'poll-image-viewer',
+        media: true,
         disabledAnimation: true,
         isDismissable: isDesktop,
         children: (

@@ -133,6 +133,7 @@ export const PendingPostContent = ({
     if (!post) return;
     openPopup({
       id: 'image-viewer',
+      media: true,
       disabledAnimation: true,
       isDismissable: isDesktop,
       className: styles.pendingPostContent__imageViewer,

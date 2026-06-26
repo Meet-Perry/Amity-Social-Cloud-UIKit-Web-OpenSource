@@ -1,13 +1,11 @@
 import clsx from 'clsx';
 import { CloseButton } from '~/v4/social/elements';
 import React, { Fragment, PropsWithChildren } from 'react';
-import { useResponsive } from '~/v4/core/hooks/useResponsive';
 import { Dialog, Modal, ModalOverlay } from 'react-aria-components';
 import { usePopupContext } from '~/v4/core/providers/PopupProvider';
 import styles from './Popup.module.css';
 
 export function Popup() {
-  const { isDesktop } = useResponsive();
   const { popups, closePopup } = usePopupContext();
 
   return (
@@ -31,7 +29,7 @@ export function Popup() {
         const close = () => closePopup(props.id);
         const isLastPopup = index + 1 === popups.length;
 
-        return isDesktop ? (
+        return (
           <ModalOverlay
             {...props}
             key={props.id}
@@ -40,6 +38,7 @@ export function Popup() {
             isOpen={keepPrevious || isLastPopup}
             className={clsx(styles.overlay, overlayClassName)}
             data-view={keepPrevious && !isLastPopup ? 'none' : view}
+            data-media={!!media}
             aria-label={ariaLabel}
             onOpenChange={(open) => (!open && onClose ? onClose({ close }) : close())}
           >
@@ -63,34 +62,6 @@ export function Popup() {
               </Dialog>
             </Modal>
           </ModalOverlay>
-        ) : (
-          (keepPrevious || isLastPopup) && (
-            <div
-              role="dialog"
-              key={props.id}
-              aria-modal="true"
-              aria-label={ariaLabel}
-              data-animation={!disabledAnimation}
-              className={clsx(styles.overlay, overlayClassName)}
-              data-view={keepPrevious && !isLastPopup ? 'none' : view}
-            >
-              <Dialog
-                data-media={!!media}
-                data-animation={!disabledAnimation}
-                className={clsx(styles.popup, styles.dialog, className)}
-                aria-label={ariaLabel}
-              >
-                {({ close }) => {
-                  return (
-                    <Fragment>
-                      {header && <Popup.Header onClose={close}>{header}</Popup.Header>}
-                      {typeof children === 'function' ? children({ close }) : children}
-                    </Fragment>
-                  );
-                }}
-              </Dialog>
-            </div>
-          )
         );
       })}
     </Fragment>

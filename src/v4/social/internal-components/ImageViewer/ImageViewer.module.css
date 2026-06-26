@@ -6,14 +6,16 @@
   align-items: center;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .imageViewer__fullImage {
   max-width: 100%;
-
-  /* set max-height equal to popup's max-height to avoid cutting off the image */
-  max-height: 80vh;
-  object-fit: cover;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   display: block;
 }
 
@@ -78,10 +80,12 @@
   top: 0;
   left: 0;
   width: 100%;
+  z-index: 10;
   display: flex;
   position: absolute;
   align-items: center;
-  padding: 2rem 1rem 1rem;
+  padding: max(2rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) 1rem
+    max(1rem, env(safe-area-inset-left));
   justify-content: space-between;
   background-color: rgb(from var(--asc-color-black) r g b / 50%);
 }
@@ -141,7 +145,14 @@
 }
 
 .imageViewer__imageContainer {
-  position: relative;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .imageViewer__productTagBadge {
