@@ -1,6 +1,4 @@
 .imageViewer__modal {
-  width: 100%;
-  height: 100%;
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -12,11 +10,36 @@
 
 .imageViewer__fullImage {
   max-width: 100%;
-  max-height: 100%;
   width: auto;
   height: auto;
   object-fit: contain;
   display: block;
+}
+
+.imageViewer__imageContainer {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+@media only screen and (width < 48em) {
+  .imageViewer__modal {
+    width: 100%;
+    height: 100%;
+  }
+
+  .imageViewer__imageContainer {
+    position: absolute;
+    inset: 0;
+  }
+
+  .imageViewer__fullImage {
+    max-height: 100%;
+  }
 }
 
 .imageViewer__failedIcon {
@@ -124,6 +147,7 @@
 @media only screen and (width >= 48em) {
   .imageViewer__fullImage {
     max-width: 37.5rem;
+    max-height: 80vh;
   }
 
   .imageViewer__itemContainer {
@@ -142,17 +166,6 @@
   .imageViewer__close {
     background-color: transparent;
   }
-}
-
-.imageViewer__imageContainer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
 }
 
 .imageViewer__productTagBadge {

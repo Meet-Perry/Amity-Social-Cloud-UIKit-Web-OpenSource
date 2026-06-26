@@ -136,6 +136,8 @@
 
   .overlay[data-media='true'] {
     padding: 0;
+    align-items: center;
+    justify-content: center;
   }
 
   .popup[data-media='true'] {
@@ -144,6 +146,15 @@
     max-width: none;
     max-height: 80vh;
     overflow: hidden;
+    display: block;
+  }
+
+  .popup[data-media='true'] .dialog {
+    flex: none;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    display: block;
   }
 
   .popup__header__closeButton[data-focus-visible] {
