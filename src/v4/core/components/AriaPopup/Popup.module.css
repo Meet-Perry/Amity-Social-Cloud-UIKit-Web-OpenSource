@@ -14,28 +14,9 @@
   animation: none;
 }
 
-.dialog {
-  outline: none;
-}
-
 .popup[data-media='true'] {
   border-radius: 0;
   background: transparent;
-  width: 100%;
-  height: 100%;
-  max-width: 100vw;
-  max-height: 100dvh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.popup[data-media='true'] .dialog {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 .overlay {
@@ -44,19 +25,11 @@
   width: 100%;
   z-index: 1001;
   height: 100vh;
-  height: 100dvh;
   display: flex;
   position: fixed;
   align-items: center;
   justify-content: center;
   background: var(--asc-color-black);
-}
-
-.overlay[data-media='true'] {
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
-    env(safe-area-inset-left);
-  align-items: stretch;
-  justify-content: stretch;
 }
 
 .overlay[data-view='mobile'] {
@@ -82,6 +55,10 @@
 
 .overlay[data-view='none'] {
   display: none;
+}
+
+.dialog {
+  outline: none;
 }
 
 .popup__header {
@@ -121,6 +98,34 @@
   }
 }
 
+@media (width < 48em) {
+  .overlay[data-media='true'] {
+    height: 100dvh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+      env(safe-area-inset-left);
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .popup[data-media='true'] {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .popup[data-media='true'] .dialog {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 @media (width >= 48em) {
   .overlay {
     background: rgb(from var(--asc-color-black) r g b / 80%);
@@ -132,29 +137,6 @@
 
   .overlay[data-view='desktop'] {
     display: flex;
-  }
-
-  .overlay[data-media='true'] {
-    padding: 0;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .popup[data-media='true'] {
-    width: auto;
-    height: auto;
-    max-width: none;
-    max-height: 80vh;
-    overflow: hidden;
-    display: block;
-  }
-
-  .popup[data-media='true'] .dialog {
-    flex: none;
-    width: auto;
-    height: auto;
-    min-height: 0;
-    display: block;
   }
 
   .popup__header__closeButton[data-focus-visible] {
