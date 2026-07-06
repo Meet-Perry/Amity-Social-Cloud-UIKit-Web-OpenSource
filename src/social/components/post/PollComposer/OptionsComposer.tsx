@@ -11,9 +11,9 @@ import {
   OptionInputContainer,
   Counter,
   TitleContainer,
+  SecondaryButton,
 } from './styles';
 import { PlusIcon } from '~/social/components/UserInfo/styles';
-import Button from '~/core/components/Button';
 
 const MAX_OPTION_TEXT_LENGTH = 200;
 
@@ -118,7 +118,7 @@ const OptionsComposer = ({ onChange, optionsLimit }: OptionsComposerProps) => {
         />
       ))}
       <div>
-        <Button
+        <SecondaryButton
           data-testid="poll-composer-add-option-button"
           fullWidth
           disabled={!addOptionEnabled}
@@ -128,7 +128,7 @@ const OptionsComposer = ({ onChange, optionsLimit }: OptionsComposerProps) => {
           }}
         >
           <PlusIcon /> <FormattedMessage id="options_composer.button.add" />
-        </Button>
+        </SecondaryButton>
       </div>
     </OptionsComposerContainer>
   );

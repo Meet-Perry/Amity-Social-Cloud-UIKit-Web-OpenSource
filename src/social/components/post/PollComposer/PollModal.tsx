@@ -4,6 +4,7 @@ import { PollRepository } from '@amityco/ts-sdk';
 
 import Modal from '~/core/components/Modal';
 import PollComposer from '~/social/components/post/PollComposer';
+import { ThemedPollModal } from '~/social/components/post/PollComposer/styles';
 import { ERROR_RESPONSE } from '~/social/constants';
 import { useConfirmContext } from '~/core/providers/ConfirmProvider';
 import { useNotifications } from '~/core/providers/NotificationProvider';
@@ -56,20 +57,22 @@ const PollModal = ({ targetId, targetType, onClose, onCreatePoll }: PollModalPro
     });
 
   return (
-    <Modal
-      data-testid="poll-composer-modal"
-      title={formatMessage({ id: 'poll_modal.title' })}
-      clean={false}
-      onCancel={isDirty ? closeConfirm : onClose}
-    >
-      <PollComposer
-        targetId={targetId}
-        targetType={targetType}
-        onIsDirtyChange={(newValue) => setDirty(newValue)}
-        onCancel={closeConfirm}
-        onSubmit={handleSubmit}
-      />
-    </Modal>
+    <ThemedPollModal>
+      <Modal
+        data-testid="poll-composer-modal"
+        title={formatMessage({ id: 'poll_modal.title' })}
+        clean={false}
+        onCancel={isDirty ? closeConfirm : onClose}
+      >
+        <PollComposer
+          targetId={targetId}
+          targetType={targetType}
+          onIsDirtyChange={(newValue) => setDirty(newValue)}
+          onCancel={closeConfirm}
+          onSubmit={handleSubmit}
+        />
+      </Modal>
+    </ThemedPollModal>
   );
 };
 

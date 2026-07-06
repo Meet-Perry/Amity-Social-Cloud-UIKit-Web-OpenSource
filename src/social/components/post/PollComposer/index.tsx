@@ -20,12 +20,12 @@ import {
   Counter,
   LabelWrapper,
   MentionTextInput,
+  SecondaryButton,
 } from './styles';
 
 import OptionsComposer from '~/social/components/post/PollComposer/OptionsComposer';
 import InputCounter, { COUNTER_VALUE_PLACEHOLDER } from '~/core/components/InputCounter';
 import AnswerTypeSelector from '~/social/components/post/PollComposer/AnswerTypeSelector';
-import Button from '~/core/components/Button';
 import { MAXIMUM_MENTIONEES } from '~/social/constants';
 
 import { PollRepository } from '@amityco/ts-sdk';
@@ -276,14 +276,14 @@ const PollComposer = ({
           </FormBlock>
         </FormBody>
         <Footer>
-          <Button
+          <SecondaryButton
             onClick={(e) => {
               e.preventDefault();
               onCancel();
             }}
           >
             <FormattedMessage id="cancel" />
-          </Button>
+          </SecondaryButton>
           <SubmitButton data-testid="poll-composer-post-button" disabled={disabled}>
             <FormattedMessage id="post" />
           </SubmitButton>
