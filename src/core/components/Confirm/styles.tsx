@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Modal from '~/core/components/Modal';
 import Button, { PrimaryButton } from '~/core/components/Button';
 
@@ -25,19 +25,40 @@ export const Footer = styled.div`
   justify-content: flex-end;
 `;
 
+const transparentFocus = css`
+  &:focus,
+  &:focus-visible {
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none;
+  }
+`;
+
 export const DefaultOkButton = styled(PrimaryButton)`
   color: var(--asc-color-white);
   background: var(--asc-color-alert-default);
+  border-radius: 0.25rem;
   &:hover {
     background: var(--asc-color-alert-default);
   }
+  ${transparentFocus}
 `;
 export const DefaultCancelButton = styled(Button)`
   margin-right: 10px;
-  background-color: var(--asc-color-background-default);
+  background-color: transparent;
   border: 1px solid var(--asc-color-base-shade4);
-  color: var(--asc-color-base-default);
+  border-radius: 0.25rem;
+  color: color-mix(
+    in srgb,
+    var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
+    transparent
+  );
   &:hover {
-    color: var(--asc-color-base-default);
+    color: color-mix(
+      in srgb,
+      var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
+      transparent
+    );
   }
+  ${transparentFocus}
 `;

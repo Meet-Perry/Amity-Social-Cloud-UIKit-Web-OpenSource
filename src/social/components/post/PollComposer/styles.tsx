@@ -15,6 +15,22 @@ const ErrorMessageWrapper = styled.div`
 `;
 
 /*
+ * Suppress the focus highlight on the poll dialog's fields and buttons: transparent
+ * ring (box-shadow) and border on focus. border-color !important is needed to beat
+ * each element's own !important border shorthand; only the colour changes, so the
+ * 1px border keeps its box and nothing shifts on focus.
+ */
+const transparentFocus = css`
+  &:focus,
+  &:focus-visible,
+  &:focus-within {
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none;
+  }
+`;
+
+/*
  * Scopes the shared v3 Modal chrome to the DS colour tokens so the poll dialog
  * tracks light/dark themes (the styled-components palette is frozen at light).
  * Keyed on the dialog's own data-testid so no other v3 modal is affected. The
@@ -54,34 +70,49 @@ export const MentionTextInput = styled(InputText)`
    * real element. Override the kit's frozen-light palette with DS tokens so the
    * question field tracks light/dark themes (see Creator/styles.tsx precedent).
    */
-  background: var(--asc-color-base-shade4) !important;
-  border: 1px solid var(--asc-color-base-shade4) !important;
+  background: color-mix(
+    in srgb,
+    var(--color-background-surface-subtle) calc(var(--tw-bg-opacity) * 100%),
+    transparent
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--color-edge) calc(var(--tw-border-opacity) * 100%), transparent) !important;
 
   textarea {
-    color: var(--asc-color-base-default) !important;
-  }
-
-  &:focus-within {
-    border-color: var(--asc-color-primary-default) !important;
+    /* !important: beats the kit InputText's own textarea colour, which matches
+     * this rule at equal specificity so insertion order alone can't be trusted. */
+    color: color-mix(
+      in srgb,
+      var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
+      transparent
+    ) !important;
+    ${transparentFocus}
   }
 `;
 
 export const TextInput = styled.input`
   ${({ theme }) => theme.typography.global};
   border-radius: 4px;
-  border: 1px solid var(--asc-color-base-shade4);
+  border: 1px solid
+    color-mix(in srgb, var(--color-edge) calc(var(--tw-border-opacity) * 100%), transparent) !important;
   padding: 10px 12px;
   outline: none;
-  &:focus-within {
-    border-color: var(--asc-color-primary-default);
-  }
+  ${transparentFocus}
 `;
 
 export const OptionInput = styled(TextInput)`
-  background: var(--asc-color-base-shade4);
+  background: color-mix(
+    in srgb,
+    var(--color-background-surface-subtle) calc(var(--tw-bg-opacity) * 100%),
+    transparent
+  );
   width: 100%;
   padding-right: 60px;
-  color: var(--asc-color-base-default);
+  color: color-mix(
+    in srgb,
+    var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
+    transparent
+  );
 `;
 
 export const CloseIcon = styled(CircleRemove)``;
@@ -159,12 +190,22 @@ export const FieldContainer = styled.div`
  * border). Used for Cancel and "Add option" so they track light/dark themes.
  */
 export const SecondaryButton = styled(Button)`
-  background-color: var(--asc-color-background-default);
+  background-color: transparent;
   border: 1px solid var(--asc-color-base-shade4);
-  color: var(--asc-color-base-default);
+  border-radius: 0.25rem;
+  color: color-mix(
+    in srgb,
+    var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
+    transparent
+  );
   &:hover {
-    color: var(--asc-color-base-default);
+    color: color-mix(
+      in srgb,
+      var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
+      transparent
+    );
   }
+  ${transparentFocus}
 `;
 
 /*
@@ -177,13 +218,27 @@ export const SubmitButton = styled.button.attrs<{ edit?: boolean }>({
 })`
   ${({ theme }) => theme.typography.body};
   font-weight: normal;
-  background-color: var(--color-action-primary);
-  border: none;
+  background-color: color-mix(
+    in srgb,
+    var(--color-action-primary) calc(var(--tw-bg-opacity) * 100%),
+    transparent
+  );
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--color-action-primary-border) calc(var(--tw-border-opacity) * 100%),
+      transparent
+    );
   outline: none;
   cursor: pointer;
+  border-radius: 0.25rem;
   padding: 10px 16px;
   margin-left: 12px;
-  color: var(--color-action-primary-text);
+  color: color-mix(
+    in srgb,
+    var(--color-action-primary-text) calc(var(--tw-text-opacity) * 100%),
+    transparent
+  );
 
   &:hover:not(:disabled) {
     color: var(--asc-color-primary-shade1);
@@ -195,6 +250,8 @@ export const SubmitButton = styled.button.attrs<{ edit?: boolean }>({
     background-color: var(--color-action-primary-disabled);
   }
 
+  ${transparentFocus}
+
   ${({ edit }) =>
     edit &&
     css`
@@ -203,11 +260,70 @@ export const SubmitButton = styled.button.attrs<{ edit?: boolean }>({
     `};
 `;
 
+/*
+ * The answer-type Select renders a <button> trigger. Restyle it to match the poll
+ * inputs (surface-subtle fill, edge border, foreground text, 4px radius, no focus
+ * highlight) instead of the kit's frozen-light DefaultTrigger.
+ */
 export const StyledSelect = styled(Select)`
   button {
     width: 100%;
-    color: var(--asc-color-base-default);
-    border-color: var(--asc-color-base-shade4);
+    border-radius: 4px;
+    padding: 10px 12px;
+    background: color-mix(
+      in srgb,
+      var(--color-background-surface-subtle) calc(var(--tw-bg-opacity) * 100%),
+      transparent
+    );
+    border: 1px solid
+      color-mix(in srgb, var(--color-edge) calc(var(--tw-border-opacity) * 100%), transparent) !important;
+    color: color-mix(
+      in srgb,
+      var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
+      transparent
+    );
+    ${transparentFocus}
+  }
+
+  /*
+   * Dropdown popup. It renders inline inside the Select (not portaled), so these
+   * descendant rules reach it. The Menu is the visible panel (parent of the menu
+   * items); its opaque DS surface fill covers the Frame's frozen-light background
+   * behind it. Items keyed on their stable data-testid suffix so the empty
+   * anchor (no data-testid passed) still matches.
+   */
+  div:has(> [data-testid$='select-menu-item']) {
+    background: color-mix(
+      in srgb,
+      var(--color-background-surface) calc(var(--tw-bg-opacity) * 100%),
+      transparent
+    );
+    border: 0;
+  }
+
+  /*
+   * The Frame panel (parent of the Menu) ships the kit's frozen white background,
+   * which peeks around the Menu as a white ring. Clear it so only the Menu's DS
+   * surface shows; the Frame's drop-shadow is unaffected.
+   */
+  div:has(> div > [data-testid$='select-menu-item']) {
+    background: transparent !important;
+  }
+
+  [data-testid$='select-menu-item'] {
+    color: color-mix(
+      in srgb,
+      var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
+      transparent
+    );
+  }
+
+  [data-testid$='select-menu-item']:hover {
+    background: color-mix(
+      in srgb,
+      var(--color-background-surface-subtle) calc(var(--tw-bg-opacity) * 100%),
+      transparent
+    ) !important;
   }
 `;
 
