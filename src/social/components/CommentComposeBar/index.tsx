@@ -90,7 +90,7 @@ const CommentComposeBar = ({
 
   return (
     <CommentComposeBarContainer className={className}>
-      <Avatar avatar={avatarFileUrl} backgroundImage={UserImage} />
+      <Avatar avatar={user?.avatarCustomUrl || avatarFileUrl} backgroundImage={UserImage} />
       <CommentComposeBarInput
         ref={commentInputRef}
         data-testid="comment-compose-bar-textarea"

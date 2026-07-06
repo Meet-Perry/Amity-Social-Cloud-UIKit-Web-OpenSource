@@ -65,7 +65,7 @@ const Post = ({ postId, className, hidePostTarget, readonly, onDeleted }: PostPr
         childrenPosts: childrenPosts || [],
         handleClosePoll,
         isPollClosed,
-        avatarFileUrl,
+        avatarFileUrl: postedUser?.avatarCustomUrl || avatarFileUrl,
         user: postedUser,
         poll,
         className,

@@ -20,7 +20,7 @@ const PostHeader = ({ postId, hidePostTarget, loading }: PostHeaderProps) => {
 
   const postHeaderProps = usePostHeaderProps({
     post,
-    avatarFileUrl,
+    avatarFileUrl: user?.avatarCustomUrl || avatarFileUrl,
     user,
     loading,
     hidePostTarget,
