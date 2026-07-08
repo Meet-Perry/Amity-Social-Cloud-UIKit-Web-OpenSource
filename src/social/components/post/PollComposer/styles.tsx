@@ -204,6 +204,7 @@ export const SecondaryButton = styled(Button)`
   background-color: transparent;
   border: 1px solid var(--asc-color-base-shade4);
   border-radius: 0.25rem;
+  text-transform: uppercase;
   color: color-mix(
     in srgb,
     var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
@@ -242,6 +243,7 @@ export const SubmitButton = styled.button.attrs<{ edit?: boolean }>({
   outline: none;
   cursor: pointer;
   border-radius: 0.25rem;
+  text-transform: uppercase;
   padding: 10px 16px;
   margin-left: 12px;
   color: color-mix(

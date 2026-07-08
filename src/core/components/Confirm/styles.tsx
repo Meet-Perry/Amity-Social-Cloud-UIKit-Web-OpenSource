@@ -25,29 +25,21 @@ export const Footer = styled.div`
   justify-content: flex-end;
 `;
 
-const transparentFocus = css`
-  &:focus,
-  &:focus-visible {
-    border-color: transparent !important;
-    box-shadow: none !important;
-    outline: none;
-  }
-`;
-
 export const DefaultOkButton = styled(PrimaryButton)`
   color: var(--asc-color-white);
   background: var(--asc-color-alert-default);
   border-radius: 0.25rem;
+  text-transform: uppercase;
   &:hover {
     background: var(--asc-color-alert-default);
   }
-  ${transparentFocus}
 `;
 export const DefaultCancelButton = styled(Button)`
   margin-right: 10px;
   background-color: transparent;
   border: 1px solid var(--asc-color-base-shade4);
   border-radius: 0.25rem;
+  text-transform: uppercase;
   color: color-mix(
     in srgb,
     var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
@@ -60,5 +52,4 @@ export const DefaultCancelButton = styled(Button)`
       transparent
     );
   }
-  ${transparentFocus}
 `;
