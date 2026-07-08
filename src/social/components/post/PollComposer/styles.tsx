@@ -15,17 +15,25 @@ const ErrorMessageWrapper = styled.div`
 `;
 
 /*
- * Suppress the focus highlight on the poll dialog's fields and buttons: transparent
- * ring (box-shadow) and border on focus. border-color !important is needed to beat
- * each element's own !important border shorthand; only the colour changes, so the
- * 1px border keeps its box and nothing shifts on focus.
+ * Focus ring for the poll dialog's fields, reusing the app's tailwind ring scaffold.
+ * The width and colour are set LOCALLY here because:
+ *  - tailwind's base only ships ring *defaults* on `*` (0px width, blue colour), and
+ *  - no `ring-*` utility class runs on these styled-components,
+ * so the raw scaffold composes to an invisible 0px, default-blue ring (that's why the
+ * pasted version "did nothing"). We give it a real 2px width and wire the colour to
+ * the DS accent token — matching the app's `focus:border-foreground-accent`. Offset
+ * kept at the tailwind default (0) so the ring hugs the field. `--tw-ring-inset` is
+ * dropped from the shadows so an undefined value can't invalidate the box-shadow.
  */
-const transparentFocus = css`
+const shadowFocus = css`
   &:focus,
   &:focus-visible,
   &:focus-within {
-    border-color: transparent !important;
-    box-shadow: none !important;
+    --tw-ring-color: var(--color-foreground-accent);
+    --tw-ring-offset-color: var(--color-background-surface);
+    --tw-ring-offset-shadow: 0 0 0 var(--tw-ring-offset-width, 0px) var(--tw-ring-offset-color);
+    --tw-ring-shadow: 0 0 0 calc(2px + var(--tw-ring-offset-width, 0px)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000) !important;
     outline: none;
   }
 `;
@@ -86,7 +94,10 @@ export const MentionTextInput = styled(InputText)`
       var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
       transparent
     ) !important;
-    ${transparentFocus}
+
+    /* Ring on the container (via :focus-within) — the visible bordered box — since
+      * focus actually lands on the inner textarea. */
+    ${shadowFocus}
   }
 `;
 
@@ -97,7 +108,7 @@ export const TextInput = styled.input`
     color-mix(in srgb, var(--color-edge) calc(var(--tw-border-opacity) * 100%), transparent) !important;
   padding: 10px 12px;
   outline: none;
-  ${transparentFocus}
+  ${shadowFocus}
 `;
 
 export const OptionInput = styled(TextInput)`
@@ -205,7 +216,6 @@ export const SecondaryButton = styled(Button)`
       transparent
     );
   }
-  ${transparentFocus}
 `;
 
 /*
@@ -250,8 +260,6 @@ export const SubmitButton = styled.button.attrs<{ edit?: boolean }>({
     background-color: var(--color-action-primary-disabled);
   }
 
-  ${transparentFocus}
-
   ${({ edit }) =>
     edit &&
     css`
@@ -282,7 +290,7 @@ export const StyledSelect = styled(Select)`
       var(--color-foreground-primary) calc(var(--tw-text-opacity) * 100%),
       transparent
     );
-    ${transparentFocus}
+    ${shadowFocus}
   }
 
   /*
