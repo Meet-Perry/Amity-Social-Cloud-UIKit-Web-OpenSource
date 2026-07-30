@@ -54,6 +54,12 @@ export interface PageBehavior {
       post: Amity.Post;
       isClipPost?: boolean;
     }) => void;
+    onPostFileClick?: (context: {
+      fileId?: string;
+      fileUrl: string;
+      fileName: string;
+      mimeType?: string;
+    }) => void;
   };
   AmitySocialGlobalSearchPageBehavior?: {
     goToPostDetailPage?: (context: {
@@ -462,6 +468,9 @@ export const PageBehaviorProvider: React.FC<PageBehaviorProviderProps> = ({
         }
         goToPostComposerPage(context);
       },
+      // Deliberately left undefined when the host app doesn't provide it —
+      // FileContent falls back to its native download link in that case.
+      onPostFileClick: pageBehavior?.AmityPostContentComponentBehavior?.onPostFileClick,
     },
 
     AmitySocialGlobalSearchPageBehavior: {
