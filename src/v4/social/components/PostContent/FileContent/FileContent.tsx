@@ -4,6 +4,7 @@ import FileIcon from '~/icons/files';
 import { Typography } from '~/v4/core/components';
 import { useAmityElement } from '~/v4/core/hooks/uikit';
 import useFile from '~/v4/core/hooks/useFile';
+import { usePageBehavior } from '~/v4/core/providers/PageBehaviorProvider';
 
 import styles from './FileContent.module.css';
 
@@ -47,12 +48,14 @@ type FileItemProps = {
 };
 
 function FileItem({ fileId, pageId = '*', componentId = '*' }: FileItemProps) {
+  const { AmityPostContentComponentBehavior } = usePageBehavior();
   const file = useFile(fileId);
 
   if (!file) return null;
 
   const name = file.attributes?.name ?? 'File';
   const size = Number(file.attributes?.size);
+  const onPostFileClick = AmityPostContentComponentBehavior?.onPostFileClick;
 
   return (
     <a
@@ -60,6 +63,18 @@ function FileItem({ fileId, pageId = '*', componentId = '*' }: FileItemProps) {
       download
       className={styles.fileContent__item}
       data-testid={`${pageId}/${componentId}/post_file`}
+      onClick={
+        onPostFileClick &&
+        ((event) => {
+          event.preventDefault();
+          onPostFileClick({
+            fileId,
+            fileUrl: file.fileUrl,
+            fileName: name,
+            mimeType: file.attributes?.mimeType,
+          });
+        })
+      }
     >
       <span className={styles.fileContent__icon}>
         {/* Reuse the composer's colored file-type icon set (PDF/Doc/Xls/…) */}
