@@ -264,6 +264,7 @@ export interface PageBehavior {
     handleNonFollowerAction?(context: { alignment: NotificationAlignment }): void;
     onPostProductTagClick?(context: { product: Amity.Product }): void;
     onLivestreamProductTagClick?(context: { product: Amity.Product }): void;
+    onPostLinkCopied?(context: { postId: string; link: string }): void;
   };
   AmityEventTargetSelectionPageBehavior?: {
     goToEventSetupPage?(context: EventSetupProps): void;
@@ -1019,6 +1020,11 @@ export const PageBehaviorProvider: React.FC<PageBehaviorProviderProps> = ({
         }
         context.product?.productUrl &&
           window.open(context.product.productUrl, '_blank', 'noopener,noreferrer');
+      },
+      onPostLinkCopied: (context: { postId: string; link: string }) => {
+        if (pageBehavior?.AmityGlobalBehavior?.onPostLinkCopied) {
+          return pageBehavior.AmityGlobalBehavior.onPostLinkCopied(context);
+        }
       },
     },
     AmityMyCommunitiesComponentBehavior: {

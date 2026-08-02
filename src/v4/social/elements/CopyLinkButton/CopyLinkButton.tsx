@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconButton } from '~/v4/core/components/IconButton';
 import { useNotifications } from '~/v4/core/providers/NotificationProvider';
+import { usePageBehavior } from '~/v4/core/providers/PageBehaviorProvider';
 import { CopyToClipboard } from '~/v4/icons/CopyToClipboard';
 import { SharableModel } from '~/v4/utils/sharableLink';
 import { useSharableLink } from '~/v4/social/hooks/useSharableLink';
@@ -25,6 +26,7 @@ export const CopyLinkButton = ({
   onDone,
 }: CopyLinkButtonProps) => {
   const notification = useNotifications();
+  const { AmityGlobalBehavior } = usePageBehavior();
   const elementId = 'copy_link';
 
   const { link, isLoading } = useSharableLink({
@@ -44,6 +46,9 @@ export const CopyLinkButton = ({
       defaultIcon={<CopyToClipboard className={styles.copyLinkButton__icon} />}
       onPress={() => {
         navigator.clipboard.writeText(link);
+        if (model === SharableModel.POST && referenceId) {
+          AmityGlobalBehavior?.onPostLinkCopied?.({ postId: referenceId, link });
+        }
         notification.success({ content: 'Link copied', alignment: notificationAlignment });
         onDone?.();
       }}

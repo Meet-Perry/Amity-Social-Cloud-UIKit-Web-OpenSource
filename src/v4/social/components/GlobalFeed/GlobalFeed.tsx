@@ -94,7 +94,7 @@ export const GlobalFeed = ({
 
           return (
             <React.Fragment key={item.post.postId}>
-              <div className={styles.global_feed__postContainer}>
+              <div className={styles.global_feed__postContainer} data-post-id={item.post.postId}>
                 <PostContent
                   pageId={pageId}
                   post={item.post}
@@ -127,7 +127,7 @@ export const GlobalFeed = ({
           {isAmityAd(item) ? (
             <PostAd ad={item} />
           ) : (
-            <div className={styles.global_feed__postContainer}>
+            <div className={styles.global_feed__postContainer} data-post-id={item.postId}>
               <PostContent
                 pageId={pageId}
                 post={item}
