@@ -134,9 +134,76 @@
     background-color: var(--asc-color-base-shade4);
   }
 
-  .imageViewer__prev,
-  .imageViewer__next {
+  /* Design pins the controls to the viewport corners, not to the image: a 2.75rem
+     hit target inset 0.75rem from each edge. The popup container is content-sized
+     around the image, so `fixed` (not `absolute`) is what reaches the screen edges.
+
+     These are `natives/Button`s, which always carry that component's own `.button`
+     class — and it declares `all: unset`, wiping background-color, border-radius and
+     position alike. A single class ties it at specificity (0,1,0), so whichever
+     stylesheet the bundler emits last wins. Repeating the class lifts these rules to
+     (0,2,0) and makes them win regardless of emit order. */
+  .imageViewer__prev.imageViewer__prev,
+  .imageViewer__next.imageViewer__next {
+    top: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    z-index: 1002;
     display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    background-color: var(--color-background-canvas);
+  }
+
+  /* The canvas token is cream in light theme, so the near-white chevron used on
+     mobile would disappear on it. Pairing it with the foreground token keeps the
+     arrow readable in both themes, since both flip together on `.dark`. */
+  .imageViewer__prev__icon,
+  .imageViewer__next__icon {
+    fill: var(--color-foreground-primary);
+  }
+
+  .imageViewer__prev.imageViewer__prev {
+    left: 0.75rem;
+  }
+
+  .imageViewer__next.imageViewer__next {
+    right: 0.75rem;
+  }
+
+  /* Close (and the overflow menu) move to the top-right corner. The DOM order is
+     clear-then-menu, so row-reverse is what puts the ✕ outermost, in the corner
+     itself, with the ⋮ tucked inside it. */
+  .imageViewer__close {
+    gap: 0.5rem;
+    padding: 0.75rem;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+
+  /* Same cascade fight as the chevrons, with a second contender: `ClearButton`'s own
+     `.clearButton` class hard-codes a 1.5rem box, so the size needs the specificity
+     bump too, not just the background. The circle goes on the button (via
+     `buttonClassName`) rather than the icon, so the ✕ keeps its 1.5rem size and is
+     centred inside a 2.75rem target instead of being scaled up to fill it. */
+  .imageViewer__closeButton__button.imageViewer__closeButton__button {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--color-background-canvas);
+  }
+
+  /* Same reasoning as the chevrons: the base icon is white, which would vanish on
+     the cream canvas in light theme. The overflow menu keeps its white glyph — it
+     stays transparent, sitting directly on the black overlay. */
+  .imageViewer__closeButton {
+    fill: var(--color-foreground-primary);
   }
 }
 

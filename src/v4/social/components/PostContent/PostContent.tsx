@@ -547,7 +547,7 @@ export const PostContent = ({
       id: 'image-viewer',
       media: true,
       disabledAnimation: true,
-      isDismissable: isDesktop,
+      isDismissable: false,
       className: styles.postContent__imageViewer,
       overlayClassName: styles.postContent__imageViewerOverlay,
       children: (
@@ -565,7 +565,7 @@ export const PostContent = ({
       id: 'video-viewer',
       media: true,
       disabledAnimation: true,
-      isDismissable: isDesktop,
+      isDismissable: false,
       className: styles.postContent__imageViewer,
       overlayClassName: styles.postContent__imageViewerOverlay,
       children: (

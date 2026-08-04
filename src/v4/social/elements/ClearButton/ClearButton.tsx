@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-import { ClearIcon } from '~/v4/icons/Clear';
+import CloseIcon from '~/v4/icons/Close';
 import { useAmityElement } from '~/v4/core/hooks/uikit';
 import { IconComponent } from '~/v4/core/IconComponent';
 import { Button, ButtonProps } from '~/v4/core/natives/Button';
@@ -44,7 +44,7 @@ export const ClearButton = ({
       <IconComponent
         configIconName={config.icon}
         defaultIconName={defaultConfig.icon}
-        defaultIcon={() => <ClearIcon className={defaultClassName} />}
+        defaultIcon={() => <CloseIcon className={defaultClassName} />}
         imgIcon={() => <img src={config.icon} alt={uiReference} className={imgClassName} />}
       />
     </Button>

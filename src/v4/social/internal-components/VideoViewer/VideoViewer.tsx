@@ -65,6 +65,7 @@ export function VideoViewer({
           pageId={pageId}
           onPress={handleClose}
           componentId={componentId}
+          buttonClassName={styles.videoViewer__closeButton__button}
           defaultClassName={styles.videoViewer__closeButton}
           imgClassName={styles.videoViewer__closeButton__img}
         />

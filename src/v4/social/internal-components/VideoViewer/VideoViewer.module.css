@@ -101,4 +101,34 @@
   .videoViewer__next {
     display: initial;
   }
+
+  /* Close moves to the top-right corner, matching the image viewer. Unlike that
+     one, this bar is content-sized and anchored left, so it has to be re-anchored
+     rather than just reversed. */
+  .videoViewer__close {
+    left: auto;
+    right: 0;
+    padding: 0.75rem;
+  }
+
+  /* Mirrors the image viewer: `natives/Button` carries `all: unset` and `ClearButton`
+     hard-codes a 1.5rem box, both at specificity (0,1,0), so the repeated class is what
+     makes the size and background stick regardless of stylesheet emit order. The circle
+     goes on the button rather than the icon so the ✕ stays 1.5rem, centred in a 2.75rem
+     target instead of being scaled up to fill it. */
+  .videoViewer__closeButton__button.videoViewer__closeButton__button {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--color-background-canvas);
+  }
+
+  /* The base glyph is white, which would disappear on the cream canvas in light theme.
+     The foreground token flips with the theme in step with the canvas token. */
+  .videoViewer__closeButton {
+    fill: var(--color-foreground-primary);
+  }
 }

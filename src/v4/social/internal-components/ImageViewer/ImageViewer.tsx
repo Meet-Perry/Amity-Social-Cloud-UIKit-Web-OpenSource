@@ -133,6 +133,7 @@ export function ImageViewer({
             removeDrawerData();
           }}
           componentId={componentId}
+          buttonClassName={styles.imageViewer__closeButton__button}
           defaultClassName={styles.imageViewer__closeButton}
           imgClassName={styles.imageViewer__closeButton__img}
         />
