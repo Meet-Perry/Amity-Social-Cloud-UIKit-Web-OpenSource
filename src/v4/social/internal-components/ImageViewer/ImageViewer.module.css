@@ -75,15 +75,21 @@
   transform: rotate(180deg);
 }
 
+/* Close (and the overflow menu) sit in the top-right corner on every breakpoint.
+   The DOM order is clear-then-menu, so row-reverse is what puts the ✕ outermost,
+   in the corner itself, with the ⋮ tucked inside it — reversing rather than
+   re-ordering the markup keeps the ✕ first in tab order. */
 .imageViewer__close {
   top: 0;
   left: 0;
   right: 0;
+  gap: 0.5rem;
   z-index: 1002;
   display: flex;
   position: fixed;
   align-items: center;
-  justify-content: space-between;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
   padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) 1rem
     max(1rem, env(safe-area-inset-left));
 }
@@ -117,7 +123,7 @@
   font-weight: 400;
   position: fixed;
   transform: translateX(-50%);
-  color: var(--asc-color-background-default);
+  color: var(--asc-color-white);
 }
 
 @media only screen and (width >= 48em) {
@@ -174,14 +180,10 @@
     right: 0.75rem;
   }
 
-  /* Close (and the overflow menu) move to the top-right corner. The DOM order is
-     clear-then-menu, so row-reverse is what puts the ✕ outermost, in the corner
-     itself, with the ⋮ tucked inside it. */
+  /* The corner placement is in the base rule; desktop only drops the safe-area
+     padding, which has nothing to clear on a pointer device. */
   .imageViewer__close {
-    gap: 0.5rem;
     padding: 0.75rem;
-    flex-direction: row-reverse;
-    justify-content: flex-start;
   }
 
   /* Same cascade fight as the chevrons, with a second contender: `ClearButton`'s own

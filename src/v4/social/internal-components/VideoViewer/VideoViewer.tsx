@@ -76,7 +76,11 @@ export function VideoViewer({
         </Typography.TitleBold>
       )}
       {hasPrev && (
-        <Button className={styles.videoViewer__prev} onPress={prev}>
+        <Button
+          className={styles.videoViewer__prev}
+          onPress={prev}
+          aria-label="Click to go to previous video"
+        >
           <ChevronRight className={styles.videoViewer__prevButton} />
         </Button>
       )}
@@ -88,7 +92,11 @@ export function VideoViewer({
         onClose={handleClose}
       />
       {hasNext && (
-        <Button className={styles.videoViewer__next} onPress={next}>
+        <Button
+          className={styles.videoViewer__next}
+          onPress={next}
+          aria-label="Click to go to next video"
+        >
           <ChevronRight className={styles.videoViewer__nextButton} />
         </Button>
       )}
