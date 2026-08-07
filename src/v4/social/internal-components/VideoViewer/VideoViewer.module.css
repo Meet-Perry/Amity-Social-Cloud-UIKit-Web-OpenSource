@@ -32,6 +32,8 @@
   left: 1.5rem;
   display: none;
   position: absolute;
+  align-items: center;
+  justify-content: center;
 }
 
 .videoViewer__next {
@@ -39,6 +41,13 @@
   right: 1.5rem;
   display: none;
   position: absolute;
+  align-items: center;
+  justify-content: center;
+}
+
+.videoViewer__prev[data-focus-visible],
+.videoViewer__next[data-focus-visible] {
+  outline: 2px solid var(--asc-color-primary-default);
 }
 
 .videoViewer__prev:hover,
@@ -57,9 +66,12 @@
   transform: rotate(180deg);
 }
 
+/* Close sits in the top-right corner on every breakpoint, matching the image
+   viewer. Unlike that one, this bar is content-sized rather than full width, so
+   it is anchored to the right edge instead of reversed. */
 .videoViewer__close {
   top: 0;
-  left: 0;
+  right: 0;
   z-index: 1002;
   display: flex;
   position: fixed;
@@ -86,7 +98,7 @@
   font-weight: 400;
   position: fixed;
   transform: translateX(-50%);
-  color: var(--asc-color-background-default);
+  color: var(--asc-color-white);
 }
 
 @media only screen and (width >= 48em) {
@@ -97,8 +109,71 @@
     max-height: 80vh;
   }
 
-  .videoViewer__prev,
-  .videoViewer__next {
-    display: initial;
+  /* Same corner-pinned chevrons as the image viewer: a 2.75rem hit target inset
+     0.75rem from each viewport edge. The popup container is content-sized around
+     the video, so `fixed` (not `absolute`) is what reaches the screen edges.
+
+     These are `natives/Button`s, which always carry that component's own `.button`
+     class — and it declares `all: unset`, wiping background-color, border-radius and
+     position alike. A single class ties it at specificity (0,1,0), so whichever
+     stylesheet the bundler emits last wins. Repeating the class lifts these rules to
+     (0,2,0) and makes them win regardless of emit order. */
+  .videoViewer__prev.videoViewer__prev,
+  .videoViewer__next.videoViewer__next {
+    top: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    z-index: 1002;
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    background-color: var(--color-background-canvas);
+  }
+
+  /* The canvas token is cream in light theme, so the near-white chevron used on
+     mobile would disappear on it. Pairing it with the foreground token keeps the
+     arrow readable in both themes, since both flip together on `.dark`. The
+     rotation stays on the icon, so the button's translateY is left untouched. */
+  .videoViewer__prevButton,
+  .videoViewer__nextButton {
+    fill: var(--color-foreground-primary);
+  }
+
+  .videoViewer__prev.videoViewer__prev {
+    left: 0.75rem;
+  }
+
+  .videoViewer__next.videoViewer__next {
+    right: 0.75rem;
+  }
+
+  /* The corner placement is in the base rule; desktop only drops the safe-area
+     padding, which has nothing to clear on a pointer device. */
+  .videoViewer__close {
+    padding: 0.75rem;
+  }
+
+  /* Mirrors the image viewer: `natives/Button` carries `all: unset` and `ClearButton`
+     hard-codes a 1.5rem box, both at specificity (0,1,0), so the repeated class is what
+     makes the size and background stick regardless of stylesheet emit order. The circle
+     goes on the button rather than the icon so the ✕ stays 1.5rem, centred in a 2.75rem
+     target instead of being scaled up to fill it. */
+  .videoViewer__closeButton__button.videoViewer__closeButton__button {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--color-background-canvas);
+  }
+
+  /* The base glyph is white, which would disappear on the cream canvas in light theme.
+     The foreground token flips with the theme in step with the canvas token. */
+  .videoViewer__closeButton {
+    fill: var(--color-foreground-primary);
   }
 }
