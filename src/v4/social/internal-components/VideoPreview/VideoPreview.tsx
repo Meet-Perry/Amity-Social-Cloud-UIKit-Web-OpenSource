@@ -8,7 +8,14 @@ type VideoPreviewProps = {
 
 export const VideoPreview = React.forwardRef<HTMLVideoElement, VideoPreviewProps>(
   ({ src, mimeType, mediaFit, ...props }, ref) => (
-    <video controls controlsList="nodownload" {...props} ref={ref} data-testid="video-preview">
+    <video
+      controls
+      controlsList="nodownload"
+      crossOrigin="anonymous"
+      {...props}
+      ref={ref}
+      data-testid="video-preview"
+    >
       <source src={src} type={mimeType} />
       <p>
         Your browser does not support this format of video. Please try again later once the server
