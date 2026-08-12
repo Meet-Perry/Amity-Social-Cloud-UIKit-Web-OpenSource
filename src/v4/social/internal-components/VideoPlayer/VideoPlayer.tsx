@@ -275,6 +275,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     <div ref={containerRef} className={clsx(styles.videoPlayerWrapper, className)}>
       <video
         controlsList="nodownload"
+        crossOrigin="anonymous"
         autoPlay={autoPlay}
         loop={loop}
         playsInline={playsInline}
