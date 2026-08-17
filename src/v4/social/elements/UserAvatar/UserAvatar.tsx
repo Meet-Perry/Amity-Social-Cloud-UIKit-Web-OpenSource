@@ -10,6 +10,7 @@ import { useNavigation } from '~/v4/core/providers/NavigationProvider';
 import { usePopupContext } from '~/v4/core/providers/PopupProvider';
 import styles from './UserAvatar.module.css';
 import { ModeratorBadge } from '~/v4/social/elements/ModeratorBadge';
+import { EstablishedBadge, type EstablishedTier } from '~/v4/social/elements/EstablishedBadge';
 import { useMemo } from 'react';
 import { FileRepository } from '@amityco/ts-sdk';
 import UserFilled from '~/v4/icons/UserFilled';
@@ -59,6 +60,12 @@ export function UserAvatar({
     userData?.displayName || userData?.userId || user?.displayName || user?.userId || '';
   const firstChar = displayName?.trim().charAt(0).toUpperCase();
 
+  // Perry Established mark (ENG-882 / ENG-895). Driven by fields the host app writes onto the Amity
+  // user's metadata: `established` (bool), `hideEstablishedBadge` (bool opt-out), `establishedTier`.
+  const metadata = (userData?.metadata ?? user?.metadata) as Record<string, unknown> | undefined;
+  const showEstablished = Boolean(metadata?.established) && metadata?.hideEstablishedBadge !== true;
+  const establishedTier = (metadata?.establishedTier as EstablishedTier) ?? 'established';
+
   if (!userId && !userData) {
     return (
       <div
@@ -100,6 +107,7 @@ export function UserAvatar({
         {isShowModeratorBadge && (
           <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
         )}
+        {showEstablished && <EstablishedBadge tier={establishedTier} />}
       </Button>
     );
   }
@@ -119,6 +127,7 @@ export function UserAvatar({
       {isShowModeratorBadge && (
         <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
       )}
+      {showEstablished && <EstablishedBadge tier={establishedTier} />}
     </Button>
   );
 }
