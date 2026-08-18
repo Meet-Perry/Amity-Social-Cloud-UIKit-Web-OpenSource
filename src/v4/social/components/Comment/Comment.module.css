@@ -6,12 +6,25 @@
   align-items: start;
 }
 
-/* Deep-link / notification highlight (per Figma "Highlight a comment"): the target
- * bubble keeps the glow-primary fill + accent edge for the whole time it is the target.
- * Compound selector so it wins over `.postComment__bubble` regardless of source order. */
+/* Deep-link / notification highlight (per Figma "Highlight a comment"): hold the
+ * glow-primary fill + accent edge briefly, then fade back to the standard bubble. */
+@keyframes post-comment-highlight {
+  from {
+    background-color: var(--color-glow-primary);
+    border-color: var(--color-edge-accent);
+  }
+
+  to {
+    background-color: var(--asc-color-background-shade1);
+    border-color: var(--asc-color-base-shade4);
+  }
+}
+
+/* Compound selector so it wins over `.postComment__bubble` regardless of source order. */
 .postComment__bubble.postComment__bubbleHighlighted {
   background-color: var(--color-glow-primary);
   border-color: var(--color-edge-accent);
+  animation: post-comment-highlight 3s ease-out 1s forwards;
 }
 
 .postComment__deleteComment {

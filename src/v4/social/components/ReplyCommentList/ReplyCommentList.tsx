@@ -246,9 +246,8 @@ export const ReplyCommentList = ({
     return () => document.removeEventListener(EVENT_LISTENER.COMMENT_DELETED, handler);
   }, [parentId]);
 
-  // Persistent deep-link highlight (Figma "Highlight a comment"): the pinned "highlighted"
-  // slot below renders the target reply, and we keep the glow fill + accent edge on it the
-  // whole time it is the target — no timed animation. Exclude the L1-pinned-for-context case
+  // Deep-link highlight (Figma "Highlight a comment"): the pinned "highlighted" slot below
+  // renders the target reply, whose CSS highlight fades once. Exclude the L1-for-context case
   // (the real target is a deeper L2, flagged by highlightedL2CommentId) and the "latest L2 just
   // posted" affordance, matching the previous trigger conditions.
   const isHighlighted =
@@ -357,8 +356,8 @@ export const ReplyCommentList = ({
                 isL2={isL2List}
                 l0AncestorId={l0AncestorId}
                 onClickReply={onClickReply}
-                // Persistent highlight for the actual target reply (L1 or L2); the
-                // L1-pinned-for-context case is already excluded by `isHighlighted`.
+                // Highlight the actual target reply (L1 or L2); the L1-pinned-for-context
+                // case is already excluded by `isHighlighted`.
                 isHighlighted={isHighlighted}
                 showReply={!!(showReplyCommentAt && comment.commentId === showReplyCommentAt)}
                 renderL2ReplyList={

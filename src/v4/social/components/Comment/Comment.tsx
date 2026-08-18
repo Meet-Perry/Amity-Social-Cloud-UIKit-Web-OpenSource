@@ -162,8 +162,7 @@ export const Comment = ({
     return () => document.removeEventListener(EVENT_LISTENER.REPLY_CREATED, handler);
   }, [comment.commentId]);
 
-  // The deep-link highlight (glow fill + accent edge) is applied persistently via
-  // `isHighlightedComment` for the whole time this comment is the target — no timed animation.
+  // The deep-link target stays stable for navigation and scrolling; its CSS highlight fades once.
 
   useEffect(() => {
     highlightedCommentId &&
