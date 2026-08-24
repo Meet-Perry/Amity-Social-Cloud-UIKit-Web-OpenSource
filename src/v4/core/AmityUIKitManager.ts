@@ -86,6 +86,31 @@ export class AmityUIKitManager {
     }
   }
 
+  /** Returns the existing connected client when it belongs to `userId`. */
+  public static getLoggedInClient(userId?: string): Amity.Client | null {
+    const client = AmityUIKitManager.instance?.client;
+    if (
+      !client ||
+      !userId ||
+      client.sessionState !== Amity.SessionStates.ESTABLISHED ||
+      client.userId !== userId
+    ) {
+      return null;
+    }
+
+    try {
+      if (!ASCClient.isConnected()) {
+        return null;
+      }
+      const currentUser = ASCClient.getCurrentUser();
+      return currentUser?.userId === userId ? client : null;
+    } catch {
+      // Asked before the SDK has a session to report: treat it as "not ready" and let the caller
+      // fall back to its normal setup path.
+      return null;
+    }
+  }
+
   /**
    * Registers a device with the Amity SDK and handles the login process.
    * @param params - The parameters object containing all registration options.
