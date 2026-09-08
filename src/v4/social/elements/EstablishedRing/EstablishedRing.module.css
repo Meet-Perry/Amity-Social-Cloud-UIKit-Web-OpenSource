@@ -1,0 +1,20 @@
+.establishedRing {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Scaled, not resized. The avatar keeps its own size rules, so the row it sits in never moves. */
+.establishedRing__photo {
+  display: flex;
+}
+
+.establishedRing__mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}

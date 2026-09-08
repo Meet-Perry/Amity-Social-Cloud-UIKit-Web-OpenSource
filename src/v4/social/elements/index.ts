@@ -18,6 +18,7 @@ export { Title } from './Title';
 export { EmptyNotification } from './EmptyNotification';
 export { NoInternetConnection } from './NoInternetConnection';
 export { UserAvatar } from './UserAvatar';
+export { EstablishedRing } from './EstablishedRing';
 export { NoResultTitle } from './NoResultTitle';
 export { NoResultIcon } from './NoResultIcon';
 export { InviteButton } from './InviteButton';

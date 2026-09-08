@@ -53,6 +53,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useNetworkConfig } from '~/v4/core/hooks/useNetworkConfig';
 import { ClipProvider } from '~/v4/social/providers/ClipProvider';
 import { FeedScrollProvider } from '~/v4/core/providers/FeedScrollProvider';
+import {
+  EstablishedTierProvider,
+  type EstablishedTierResolver,
+} from '~/v4/social/providers/EstablishedTierProvider';
 import { SearchResultProvider } from '~/v4/social/providers/SearchResultProvider';
 import { GlobalBan } from '~/v4/social/internal-components/GlobalBan';
 import { ERROR_RESPONSE } from '~/v4/social/constants/errorResponse';
@@ -81,6 +85,7 @@ const InternalComponent = ({
   seoOptimizationEnabled = false,
   syncNetworkConfig = false,
   onEmptyNavigationStack,
+  getEstablishedTiers,
 }: AmityUIKitProviderProps) => {
   const { error } = useNotifications();
   const [client, setClient] = useState<Amity.Client | null>(null);
@@ -249,10 +254,14 @@ const InternalComponent = ({
                                       <CommunitySetupProvider>
                                         <DrawerProvider>
                                           <GlobalFeedProvider>
-                                            <PopupProvider>
-                                              <Popup />
-                                              {children}
-                                            </PopupProvider>
+                                            <EstablishedTierProvider
+                                              getEstablishedTiers={getEstablishedTiers}
+                                            >
+                                              <PopupProvider>
+                                                <Popup />
+                                                {children}
+                                              </PopupProvider>
+                                            </EstablishedTierProvider>
                                           </GlobalFeedProvider>
                                           <DrawerContainer />
                                         </DrawerProvider>
@@ -331,6 +340,7 @@ interface AmityUIKitProviderProps {
   seoOptimizationEnabled?: boolean;
   syncNetworkConfig?: boolean;
   onEmptyNavigationStack?: () => void;
+  getEstablishedTiers?: EstablishedTierResolver;
 }
 
 const queryClient = new QueryClient();

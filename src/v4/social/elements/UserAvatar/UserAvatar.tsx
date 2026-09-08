@@ -13,6 +13,9 @@ import { ModeratorBadge } from '~/v4/social/elements/ModeratorBadge';
 import { useMemo } from 'react';
 import { FileRepository } from '@amityco/ts-sdk';
 import UserFilled from '~/v4/icons/UserFilled';
+import { EstablishedRing } from '~/v4/social/elements/EstablishedRing';
+import type { EstablishedTier } from '~/v4/social/elements/EstablishedRing';
+import { useEstablishedTier } from '~/v4/social/providers/EstablishedTierProvider';
 
 type UserAvatarProps = {
   pageId?: string;
@@ -26,6 +29,8 @@ type UserAvatarProps = {
   shouldRedirectToUserProfile?: boolean;
   onPressAvatar?: () => void;
   userData?: Amity.User;
+  /** Overrides the level from `EstablishedTierProvider`, for a caller that already holds it. */
+  establishedTier?: EstablishedTier;
 };
 
 export function UserAvatar({
@@ -40,11 +45,14 @@ export function UserAvatar({
   shouldRedirectToUserProfile = false,
   onPressAvatar,
   userData,
+  establishedTier,
 }: UserAvatarProps) {
   const elementId = 'user_avatar';
 
   const { onClickUser } = useNavigation();
   const { user, isLoading } = useUser({ userId, shouldCall: !!userId });
+  const resolvedTier = useEstablishedTier(userId ?? userData?.userId);
+  const tier = establishedTier ?? resolvedTier;
 
   const userImage = useMemo(() => {
     const url = userData?.avatar?.fileUrl ?? user?.avatar?.fileUrl;
@@ -87,38 +95,42 @@ export function UserAvatar({
 
   if (userImage) {
     return (
-      <Button
-        onPress={() => handleAvatarClick()}
-        className={clsx(styles.userAvatar__container, imageContainerClassName)}
-        data-testid={`user-avatar-button-${userId}`}
-      >
-        <img
-          src={userImage}
-          data-testid={`${accessibilityId}-${user?.userId}`}
-          className={clsx(styles.userAvatar__img, className)}
-        />
-        {isShowModeratorBadge && (
-          <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
-        )}
-      </Button>
+      <EstablishedRing tier={tier}>
+        <Button
+          onPress={() => handleAvatarClick()}
+          className={clsx(styles.userAvatar__container, imageContainerClassName)}
+          data-testid={`user-avatar-button-${userId}`}
+        >
+          <img
+            src={userImage}
+            data-testid={`${accessibilityId}-${user?.userId}`}
+            className={clsx(styles.userAvatar__img, className)}
+          />
+          {isShowModeratorBadge && (
+            <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
+          )}
+        </Button>
+      </EstablishedRing>
     );
   }
 
   return (
-    <Button
-      data-testid={`${accessibilityId}-${user?.userId}`}
-      className={clsx(styles.userAvatar__placeholder, className)}
-      onPress={() => handleAvatarClick()}
-    >
-      <Typography.TitleBold
-        data-testid={`user-avatar-${userId}`}
-        className={clsx(styles.userAvatar__placeholder__text, textPlaceholderClassName)}
+    <EstablishedRing tier={tier}>
+      <Button
+        data-testid={`${accessibilityId}-${user?.userId}`}
+        className={clsx(styles.userAvatar__placeholder, className)}
+        onPress={() => handleAvatarClick()}
       >
-        {firstChar}
-      </Typography.TitleBold>
-      {isShowModeratorBadge && (
-        <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
-      )}
-    </Button>
+        <Typography.TitleBold
+          data-testid={`user-avatar-${userId}`}
+          className={clsx(styles.userAvatar__placeholder__text, textPlaceholderClassName)}
+        >
+          {firstChar}
+        </Typography.TitleBold>
+        {isShowModeratorBadge && (
+          <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
+        )}
+      </Button>
+    </EstablishedRing>
   );
 }
