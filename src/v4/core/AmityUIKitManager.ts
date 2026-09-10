@@ -41,6 +41,10 @@ interface ConnectAndLoginParams {
   isBotUser?: boolean;
 }
 
+// `Amity.SessionStates` is an ambient const enum, so tsup/esbuild leaves the reference in the
+// bundle instead of inlining it and `Amity` does not exist at runtime. Compare the value instead.
+const ESTABLISHED_SESSION_STATE = 'established' as Amity.SessionStates;
+
 /**
  * Manages the Amity SDK client and authentication state.
  */
@@ -92,7 +96,7 @@ export class AmityUIKitManager {
     if (
       !client ||
       !userId ||
-      client.sessionState !== Amity.SessionStates.ESTABLISHED ||
+      client.sessionState !== ESTABLISHED_SESSION_STATE ||
       client.userId !== userId
     ) {
       return null;
