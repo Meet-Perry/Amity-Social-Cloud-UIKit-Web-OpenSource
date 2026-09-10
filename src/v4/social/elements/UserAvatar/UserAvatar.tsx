@@ -13,9 +13,7 @@ import { ModeratorBadge } from '~/v4/social/elements/ModeratorBadge';
 import { useMemo } from 'react';
 import { FileRepository } from '@amityco/ts-sdk';
 import UserFilled from '~/v4/icons/UserFilled';
-import { EstablishedRing } from '~/v4/social/elements/EstablishedRing';
-import type { EstablishedTier } from '~/v4/social/elements/EstablishedRing';
-import { useEstablishedTier } from '~/v4/social/providers/EstablishedTierProvider';
+import { useAvatarRing } from '~/v4/core/providers/AvatarRingProvider';
 
 type UserAvatarProps = {
   pageId?: string;
@@ -29,8 +27,6 @@ type UserAvatarProps = {
   shouldRedirectToUserProfile?: boolean;
   onPressAvatar?: () => void;
   userData?: Amity.User;
-  /** Overrides the level from `EstablishedTierProvider`, for a caller that already holds it. */
-  establishedTier?: EstablishedTier;
 };
 
 export function UserAvatar({
@@ -45,14 +41,13 @@ export function UserAvatar({
   shouldRedirectToUserProfile = false,
   onPressAvatar,
   userData,
-  establishedTier,
 }: UserAvatarProps) {
   const elementId = 'user_avatar';
 
   const { onClickUser } = useNavigation();
   const { user, isLoading } = useUser({ userId, shouldCall: !!userId });
-  const resolvedTier = useEstablishedTier(userId ?? userData?.userId);
-  const tier = establishedTier ?? resolvedTier;
+  // Whatever the host app draws around a member — a standing ring, or nothing at all.
+  const AvatarRing = useAvatarRing();
 
   const userImage = useMemo(() => {
     const url = userData?.avatar?.fileUrl ?? user?.avatar?.fileUrl;
@@ -95,7 +90,7 @@ export function UserAvatar({
 
   if (userImage) {
     return (
-      <EstablishedRing tier={tier}>
+      <AvatarRing userId={userId ?? userData?.userId}>
         <Button
           onPress={() => handleAvatarClick()}
           className={clsx(styles.userAvatar__container, imageContainerClassName)}
@@ -110,12 +105,12 @@ export function UserAvatar({
             <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
           )}
         </Button>
-      </EstablishedRing>
+      </AvatarRing>
     );
   }
 
   return (
-    <EstablishedRing tier={tier}>
+    <AvatarRing userId={userId ?? userData?.userId}>
       <Button
         data-testid={`${accessibilityId}-${user?.userId}`}
         className={clsx(styles.userAvatar__placeholder, className)}
@@ -131,6 +126,6 @@ export function UserAvatar({
           <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
         )}
       </Button>
-    </EstablishedRing>
+    </AvatarRing>
   );
 }
