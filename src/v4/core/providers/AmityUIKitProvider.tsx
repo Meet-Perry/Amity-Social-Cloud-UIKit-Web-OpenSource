@@ -83,7 +83,11 @@ const InternalComponent = ({
   onEmptyNavigationStack,
 }: AmityUIKitProviderProps) => {
   const { error } = useNotifications();
-  const [client, setClient] = useState<Amity.Client | null>(null);
+  // Seeded from the manager so a remount renders its children on the first commit rather than
+  // returning null (below) for the length of the setup chain in the effect further down.
+  const [client, setClient] = useState<Amity.Client | null>(() =>
+    AmityUIKitManager.getLoggedInClient(userId?.toString()),
+  );
   const { networkConfig, isNetworkConfigLoading } = useNetworkConfig(client);
   const [isGlobalBanned, setIsGlobalBanned] = useState<boolean>(false);
   const [isUserDeleted, setIsUserDeleted] = useState<boolean>(false);
@@ -145,20 +149,24 @@ const InternalComponent = ({
 
   useEffect(() => {
     const setup = async () => {
-      let authToken;
-
-      if (getAuthToken) {
-        authToken = await getAuthToken();
-      }
-
       try {
         // Set up the AmityUIKitManager
         AmityUIKitManager.setup({ apiKey, apiRegion, apiEndpoint, seoOptimizationEnabled });
         AdEngine.instance;
 
+        const existingClient = AmityUIKitManager.getLoggedInClient(userId?.toString());
+        if (existingClient) {
+          setClient(existingClient);
+          return;
+        }
+
+        let authToken;
+        if (getAuthToken) {
+          authToken = await getAuthToken();
+        }
+
         const newClient = AmityUIKitManager.getClient();
         const deviceId = await newClient?.getVisitorDeviceId();
-
         let authSignatureParams;
 
         if (getAuthSignature && authSignatureExpiresAt && deviceId) {
