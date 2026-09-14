@@ -13,6 +13,7 @@ import { ModeratorBadge } from '~/v4/social/elements/ModeratorBadge';
 import { useMemo } from 'react';
 import { FileRepository } from '@amityco/ts-sdk';
 import UserFilled from '~/v4/icons/UserFilled';
+import { useAvatarRing } from '~/v4/core/providers/AvatarRingProvider';
 
 type UserAvatarProps = {
   pageId?: string;
@@ -45,6 +46,8 @@ export function UserAvatar({
 
   const { onClickUser } = useNavigation();
   const { user, isLoading } = useUser({ userId, shouldCall: !!userId });
+  // Whatever the host app draws around a member — a standing ring, or nothing at all.
+  const AvatarRing = useAvatarRing();
 
   const userImage = useMemo(() => {
     const url = userData?.avatar?.fileUrl ?? user?.avatar?.fileUrl;
@@ -87,38 +90,42 @@ export function UserAvatar({
 
   if (userImage) {
     return (
-      <Button
-        onPress={() => handleAvatarClick()}
-        className={clsx(styles.userAvatar__container, imageContainerClassName)}
-        data-testid={`user-avatar-button-${userId}`}
-      >
-        <img
-          src={userImage}
-          data-testid={`${accessibilityId}-${user?.userId}`}
-          className={clsx(styles.userAvatar__img, className)}
-        />
-        {isShowModeratorBadge && (
-          <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
-        )}
-      </Button>
+      <AvatarRing userId={userId ?? userData?.userId}>
+        <Button
+          onPress={() => handleAvatarClick()}
+          className={clsx(styles.userAvatar__container, imageContainerClassName)}
+          data-testid={`user-avatar-button-${userId}`}
+        >
+          <img
+            src={userImage}
+            data-testid={`${accessibilityId}-${user?.userId}`}
+            className={clsx(styles.userAvatar__img, className)}
+          />
+          {isShowModeratorBadge && (
+            <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
+          )}
+        </Button>
+      </AvatarRing>
     );
   }
 
   return (
-    <Button
-      data-testid={`${accessibilityId}-${user?.userId}`}
-      className={clsx(styles.userAvatar__placeholder, className)}
-      onPress={() => handleAvatarClick()}
-    >
-      <Typography.TitleBold
-        data-testid={`user-avatar-${userId}`}
-        className={clsx(styles.userAvatar__placeholder__text, textPlaceholderClassName)}
+    <AvatarRing userId={userId ?? userData?.userId}>
+      <Button
+        data-testid={`${accessibilityId}-${user?.userId}`}
+        className={clsx(styles.userAvatar__placeholder, className)}
+        onPress={() => handleAvatarClick()}
       >
-        {firstChar}
-      </Typography.TitleBold>
-      {isShowModeratorBadge && (
-        <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
-      )}
-    </Button>
+        <Typography.TitleBold
+          data-testid={`user-avatar-${userId}`}
+          className={clsx(styles.userAvatar__placeholder__text, textPlaceholderClassName)}
+        >
+          {firstChar}
+        </Typography.TitleBold>
+        {isShowModeratorBadge && (
+          <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
+        )}
+      </Button>
+    </AvatarRing>
   );
 }
