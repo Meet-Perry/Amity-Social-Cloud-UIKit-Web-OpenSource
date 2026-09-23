@@ -27,7 +27,7 @@ import VideosUploaded from './components/VideosUploaded';
 import FilesUploaded from './components/FilesUploaded';
 
 import {
-  Avatar,
+  AvatarSlot,
   PostCreatorContainer,
   Footer,
   PostContainer,
@@ -40,6 +40,8 @@ import {
 
 import { MAXIMUM_POST_CHARACTERS, MAXIMUM_POST_MENTIONEES } from './constants';
 import useSDK from '~/core/hooks/useSDK';
+import Avatar from '~/core/components/Avatar';
+import { useAvatarRing } from '~/v4/core/providers/AvatarRingProvider';
 import useSocialMention from '~/social/hooks/useSocialMention';
 import useCommunityModeratorsCollection from '~/social/hooks/collections/useCommunityModeratorsCollection';
 import { ERROR_RESPONSE } from '~/social/constants';
@@ -115,6 +117,7 @@ const PostCreatorBar = ({
   const { currentUserId } = useSDK();
   const { setNavigationBlocker } = useNavigation();
   const user = useUser(currentUserId);
+  const AvatarRing = useAvatarRing();
   const { info } = useConfirmContext();
   const notification = useNotifications();
 
@@ -264,7 +267,11 @@ const PostCreatorBar = ({
   const backgroundImage = target.targetType === 'community' ? CommunityImage : UserImage;
 
   const CurrentTargetAvatar = (
-    <Avatar avatar={user?.avatar?.fileUrl || undefined} backgroundImage={backgroundImage} />
+    <AvatarSlot>
+      <AvatarRing userId={currentUserId}>
+        <Avatar avatar={user?.avatar?.fileUrl || undefined} backgroundImage={backgroundImage} />
+      </AvatarRing>
+    </AvatarSlot>
   );
   const isDisabled =
     (!text && postImages.length === 0 && postVideos.length === 0 && postFiles.length === 0) ||
