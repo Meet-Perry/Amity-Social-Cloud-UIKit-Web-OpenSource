@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 import { PrimaryButton } from '~/core/components/Button';
 import InputText from '~/core/components/InputText';
-import UIAvatar from '~/core/components/Avatar';
 import { Poll } from '~/icons';
 import PlayCircle from '~/icons/PlayCircle';
 
-export const Avatar = styled(UIAvatar)`
+// Holds the spacing outside the host's avatar ring, so the ring stays centred on the photo.
+export const AvatarSlot = styled.div`
   margin-right: 8px;
+  align-self: flex-start;
 `;
 
 export const PostCreatorContainer = styled.div`
