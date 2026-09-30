@@ -50,6 +50,8 @@ export interface VideoPlayerProps {
   onClickVideo?: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
+const isHlsUrl = (url: string | null) => !!url && /\.m3u8(\?|#|$)/i.test(url);
+
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   fileId,
   thumbnailFileId,
@@ -151,6 +153,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return file.fileUrl;
   }, [directUrl, file]);
 
+  // Transcoded videos are HLS playlists. Chrome's native HLS rejects some of them (segments whose
+  // decode timestamps overlap, common with .mov uploads) that hls.js plays fine, so detect HLS from
+  // the URL instead of relying on every caller to pass `useHls`.
+  const isHlsStream = useHls || isHlsUrl(url);
+
   const posterUrl = useMemo(() => {
     if (directThumbnailUrl) return { fileUrl: directThumbnailUrl };
     return posterUrlFile;
@@ -158,7 +165,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   // Set up HLS for streaming
   const setupHls = useCallback(() => {
-    if (!url || !videoRef.current || !useHls) return;
+    if (!url || !videoRef.current || !isHlsStream) return;
 
     // Clean up existing HLS instance
     if (hlsRef.current) {
@@ -210,10 +217,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       // Browser has native HLS support
       videoRef.current.src = url;
     }
-  }, [url, useHls, client?.token?.accessToken]);
+  }, [url, isHlsStream, client?.token?.accessToken]);
 
   useEffect(() => {
-    if (useHls) {
+    if (isHlsStream) {
       setupHls();
     } else {
       videoRef.current?.load();
@@ -225,7 +232,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         hlsRef.current = null;
       }
     };
-  }, [url, useHls, setupHls]);
+  }, [url, isHlsStream, setupHls]);
 
   const handleVideoAreaClick = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
@@ -290,7 +297,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onTouchStart={onTouchStart}
         onVolumeChange={onVolumeChange}
       >
-        {!useHls && <source src={url} type="video/mp4" />}
+        {!isHlsStream && <source src={url} type="video/mp4" />}
         <p>
           Your browser does not support this format of video. Please try again later once the server
           transcodes the video into an playable format(mp4).
