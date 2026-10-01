@@ -84,14 +84,14 @@ const PostReplyComment = ({
   const componentId = 'post_comment';
   const { confirm } = useConfirmContext();
   const { isDesktop } = useResponsive();
-  const { openPopup } = usePopupContext();
+  const { openPopup, closePopup } = usePopupContext();
   const { setDrawerData } = useDrawer();
   const { handleCommunityProfileBehavior } = useCommunityProfileGlobalBehavior();
   const { handleUserProfileBehavior } = useUserProfileGlobalBehavior();
 
   const notification = useNotifications();
   const { online } = useNetworkState();
-  const { page } = useNavigation();
+  const { page, goToUserProfilePage } = useNavigation();
 
   const { accessibilityId, config, defaultConfig, isExcluded, uiReference, themeStyles } =
     useAmityComponent({
@@ -343,7 +343,12 @@ const PostReplyComment = ({
         </div>
       ) : (
         <div className={styles.postReplyComment} style={themeStyles} data-testid={testId}>
-          <UserAvatar pageId={pageId} componentId={componentId} userId={comment.userId} />
+          <UserAvatar
+            pageId={pageId}
+            componentId={componentId}
+            userId={comment.userId}
+            shouldRedirectToUserProfile
+          />
           <div className={styles.postReplyComment__details}>
             {/* l1Content: scopes the trunk ::before to L1 height only */}
             <div
@@ -371,7 +376,15 @@ const PostReplyComment = ({
               >
                 <div className={styles.postReplyComment__content}>
                   <div className={styles.postReplyComment__header}>
-                    <div className={styles.postReplyComment__userInfo}>
+                    <Button
+                      variant="default"
+                      onPress={() => {
+                        closePopup();
+                        goToUserProfilePage(comment.creator?.userId as string);
+                      }}
+                      className={styles.postReplyComment__userInfo}
+                      data-testid={`post-reply-comment-user-${comment.creator?.userId}`}
+                    >
                       <Typography.BodyBold
                         data-testid={`${pageId}/${componentId}/username`}
                         className={styles.postReplyComment__content__username}
@@ -381,7 +394,7 @@ const PostReplyComment = ({
                       {isBrandUser && (
                         <BrandBadge className={styles.postReplyComment__brandBadge} />
                       )}
-                    </div>
+                    </Button>
                     <Typography.Caption className={styles.postReplyComment__date}>
                       <Timestamp
                         pageId={pageId}
