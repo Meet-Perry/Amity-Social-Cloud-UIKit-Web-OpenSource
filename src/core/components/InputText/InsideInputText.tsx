@@ -88,6 +88,14 @@ const suggestListStyles = {
     zIndex: 999,
     position: 'fixed',
     transform: 'translateY(1.25rem)',
+    // react-mentions keeps a portalled list inside the viewport by measuring its
+    // `offsetWidth` when it opens. Each SocialMentionItem loads its user
+    // asynchronously, so a content-sized list is still narrow at that moment
+    // and later grows past the right edge on narrow screens. A width known up
+    // front makes that measurement accurate.
+    width: '16rem',
+    maxWidth: 'calc(100vw - 1rem)',
+    boxSizing: 'border-box',
     // Theme via DS tokens so the dropdown matches the app's colour scheme in
     // both light and dark themes (the kit's styled-components palette is frozen
     // at light; react-mentions otherwise defaults the panel to white, which
