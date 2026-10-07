@@ -8,8 +8,7 @@ import styles from './styles.module.css';
 import { MentionIcon } from '~/icons';
 import { FormattedMessage } from 'react-intl';
 import { Typography } from '~/v4/core/components';
-import { Avatar } from '~/v4/core/components/Avatar';
-import User from '~/v4/icons/User';
+import { Avatar, AvatarInitials } from '~/v4/core/components/Avatar';
 
 interface SocialMentionItemProps {
   id: string;
@@ -58,7 +57,10 @@ const UserMentionItem = ({
       onMouseEnter={(e) => onMouseEnter(e, user?.isGlobalBanned)}
     >
       <div className={styles.avatar}>
-        <Avatar avatarUrl={avatarFileUrl} defaultImage={<User />} />
+        <Avatar
+          avatarUrl={avatarFileUrl}
+          defaultImage={<AvatarInitials displayName={user?.displayName} />}
+        />
       </div>
       <div className={styles.userDisplayName}>
         <Typography.Body>{user?.displayName}</Typography.Body>
