@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import React from 'react';
 import Badge from '~/v4/icons/Badge';
-import { Typography } from '~/v4/core/components';
+import { AvatarInitials } from '~/v4/core/components';
 import { Button } from '~/v4/core/natives/Button';
 import { useImage } from '~/v4/core/hooks/useImage';
 import { useAmityElement } from '~/v4/core/hooks/uikit';
@@ -36,7 +36,6 @@ export function UserAvatar({
   componentId = '*',
   imageContainerClassName,
   isShowModeratorBadge = false,
-  textPlaceholderClassName = '',
   defaultAvatarIconClassName = '',
   shouldRedirectToUserProfile = false,
   onPressAvatar,
@@ -60,7 +59,6 @@ export function UserAvatar({
 
   const displayName =
     userData?.displayName || userData?.userId || user?.displayName || user?.userId || '';
-  const firstChar = displayName?.trim().charAt(0).toUpperCase();
 
   if (!userId && !userData) {
     return (
@@ -116,12 +114,7 @@ export function UserAvatar({
         className={clsx(styles.userAvatar__placeholder, className)}
         onPress={() => handleAvatarClick()}
       >
-        <Typography.TitleBold
-          data-testid={`user-avatar-${userId}`}
-          className={clsx(styles.userAvatar__placeholder__text, textPlaceholderClassName)}
-        >
-          {firstChar}
-        </Typography.TitleBold>
+        <AvatarInitials displayName={displayName} />
         {isShowModeratorBadge && (
           <ModeratorBadge className={styles.userAvatar__badge} variant="iconOnly" />
         )}

@@ -5,6 +5,7 @@ import useSize, { SIZE_ALIAS } from '~/core/hooks/useSize';
 
 import { AvatarContainer, Img, AvatarOverlay } from './styles';
 import { useCustomComponent } from '~/core/providers/CustomComponentsProvider';
+import { AvatarInitials } from '~/v4/core/components/Avatar';
 
 export interface AvatarProps {
   className?: string;
@@ -14,6 +15,7 @@ export interface AvatarProps {
   onClick?: () => void;
   loading?: boolean;
   backgroundImage?: string | null;
+  displayName?: string | null;
 }
 
 const Avatar = ({
@@ -23,6 +25,7 @@ const Avatar = ({
   size,
   onClick,
   loading,
+  displayName,
   ...props
 }: AvatarProps) => {
   const [visible, setVisible] = useState(false);
@@ -47,7 +50,9 @@ const Avatar = ({
         ) : (
           <Img src={avatar} onError={onError} onLoad={onLoad} />
         )
-      ) : null}
+      ) : (
+        displayName && <AvatarInitials displayName={displayName} />
+      )}
     </AvatarContainer>
   );
 };

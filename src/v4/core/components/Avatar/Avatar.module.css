@@ -14,3 +14,20 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Mirrors the host app's `ui` Avatar initials fallback. */
+.avatarInitials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--color-background-surface-deep);
+  color: var(--color-foreground-accent);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: var(--font-ds-avatar-md-size);
+  line-height: var(--font-ds-avatar-md-leading);
+  letter-spacing: var(--font-ds-avatar-md-tracking);
+  font-weight: var(--font-ds-avatar-md-weight);
+}
