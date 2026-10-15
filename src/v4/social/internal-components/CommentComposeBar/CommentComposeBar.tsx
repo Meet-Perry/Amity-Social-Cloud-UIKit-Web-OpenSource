@@ -8,11 +8,10 @@ import useSDK from '~/core/hooks/useSDK';
 import { FormattedMessage, useIntl } from 'react-intl';
 import styles from './CommentComposeBar.module.css';
 
-import User, { backgroundImage as UserImage } from '~/icons/User';
 import useImage from '~/core/hooks/useImage';
 import { useConfirmContext } from '~/core/providers/ConfirmProvider';
 import InputText from '~/v4/core/components/InputText';
-import { Avatar } from '~/v4/core/components';
+import { Avatar, AvatarInitials } from '~/v4/core/components';
 import Button from '~/v4/core/components/Button/Button';
 import { LoadingIndicator } from '~/v4/social/internal-components/LoadingIndicator';
 
@@ -86,7 +85,10 @@ export const CommentComposeBar = ({
   return (
     <div className={styles.commentComposeBarContainer}>
       <div className={styles.avatar}>
-        <Avatar avatarUrl={avatarFileUrl} defaultImage={<User />} />
+        <Avatar
+          avatarUrl={avatarFileUrl}
+          defaultImage={<AvatarInitials displayName={user?.displayName} />}
+        />
       </div>
       <InputText
         ref={commentInputRef}

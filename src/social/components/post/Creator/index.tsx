@@ -14,8 +14,6 @@ import useImage from '~/core/hooks/useImage';
 import useUser from '~/core/hooks/useUser';
 import useErrorNotification from '~/core/hooks/useErrorNotification';
 
-import { backgroundImage as UserImage } from '~/icons/User';
-import { backgroundImage as CommunityImage } from '~/icons/Community';
 import { useNavigation } from '~/social/providers/NavigationProvider';
 
 import { FileLoaderContainer } from '~/core/components/Uploaders/Loader';
@@ -264,12 +262,10 @@ const PostCreatorBar = ({
     });
   };
 
-  const backgroundImage = target.targetType === 'community' ? CommunityImage : UserImage;
-
   const CurrentTargetAvatar = (
     <AvatarSlot>
       <AvatarRing userId={currentUserId}>
-        <Avatar avatar={user?.avatar?.fileUrl || undefined} backgroundImage={backgroundImage} />
+        <Avatar avatar={user?.avatar?.fileUrl || undefined} displayName={user?.displayName} />
       </AvatarRing>
     </AvatarSlot>
   );
